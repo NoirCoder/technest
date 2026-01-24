@@ -1,179 +1,183 @@
 'use client';
 
-import { supabase, Post } from '@/lib/supabase';
+import { supabase, PostWithCategories } from '@/lib/supabase';
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { Plus, Search, Eye, EyeOff, Edit, Trash2 } from 'lucide-react';
+import { Plus, Search, Filter, Edit2, Trash2, ExternalLink, MoreVertical, FileText, Clock } from 'lucide-react';
 import { formatDate } from '@/lib/markdown';
 
 export default function PostsPage() {
-    const [posts, setPosts] = useState<Post[]>([]);
-    const [filteredPosts, setFilteredPosts] = useState<Post[]>([]);
-    const [searchQuery, setSearchQuery] = useState('');
+    const [posts, setPosts] = useState<PostWithCategories[]>([]);
     const [loading, setLoading] = useState(true);
+    const [searchQuery, setSearchQuery] = useState('');
 
     useEffect(() => {
         fetchPosts();
     }, []);
 
-    useEffect(() => {
-        const filtered = posts.filter(post =>
-            post.title.toLowerCase().includes(searchQuery.toLowerCase())
-        );
-        setFilteredPosts(filtered);
-    }, [searchQuery, posts]);
-
     const fetchPosts = async () => {
         const { data } = await supabase
             .from('posts')
-            .select('*')
+            .select(`
+        *,
+        categories:post_categories(category:categories(*))
+      `)
             .order('updated_at', { ascending: false });
 
         if (data) {
-            setPosts(data);
-            setFilteredPosts(data);
+            const mappedPosts = data.map(post => ({
+                ...post,
+                categories: post.categories.map((c: any) => c.category)
+            })) as PostWithCategories[];
+            setPosts(mappedPosts);
         }
         setLoading(false);
     };
 
-    const togglePublished = async (postId: string, currentStatus: boolean) => {
-        const { error } = await supabase
-            .from('posts')
-            .update({
-                published: !currentStatus,
-                published_at: !currentStatus ? new Date().toISOString() : null
-            })
-            .eq('id', postId);
-
-        if (!error) {
-            fetchPosts();
-        }
-    };
-
-    const deletePost = async (postId: string) => {
+    const handleDelete = async (id: string) => {
         if (!confirm('Are you sure you want to delete this post?')) return;
 
         const { error } = await supabase
             .from('posts')
             .delete()
-            .eq('id', postId);
+            .eq('id', id);
 
-        if (!error) {
-            fetchPosts();
+        if (error) {
+            alert('Error deleting post');
+        } else {
+            setPosts(posts.filter(p => p.id !== id));
         }
     };
 
+    const filteredPosts = posts.filter(post =>
+        post.title.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+
     if (loading) {
-        return <div>Loading...</div>;
+        return (
+            <div className="flex items-center justify-center h-[50vh]">
+                <div className="w-10 h-10 border-4 border-primary-100 border-t-primary-600 rounded-full animate-spin"></div>
+            </div>
+        );
     }
 
     return (
-        <div>
-            <div className="flex items-center justify-between mb-8">
+        <div className="max-w-7xl mx-auto">
+            {/* Header */}
+            <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 mb-12">
                 <div>
-                    <h1 className="text-3xl font-bold font-serif text-neutral-900">Posts</h1>
-                    <p className="text-neutral-600 mt-1">Manage your blog posts</p>
+                    <div className="flex items-center gap-3 mb-2">
+                        <div className="w-8 h-1 bg-primary-600 rounded-full"></div>
+                        <span className="text-[11px] font-bold uppercase tracking-[0.3em] text-primary-600">Archive</span>
+                    </div>
+                    <h1 className="text-4xl font-bold font-serif text-neutral-900 tracking-tight">Content Library</h1>
+                    <p className="text-neutral-500 mt-2 text-lg">Manage your reviews, guides, and strategic content.</p>
                 </div>
-                <Link href="/admin/posts/new" className="btn-primary">
-                    <Plus className="w-4 h-4 mr-2" />
-                    New Post
+                <Link href="/admin/posts/new" className="btn-primary px-8 py-4 shadow-xl shadow-primary-100">
+                    <Plus className="w-5 h-5 mr-3" />
+                    New Publication
                 </Link>
             </div>
 
-            {/* Search */}
-            <div className="card p-4 mb-6">
-                <div className="relative">
-                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-neutral-400" />
+            {/* Filters / Search */}
+            <div className="bg-white p-6 rounded-[2rem] border border-neutral-100 shadow-sm flex flex-col md:flex-row items-center gap-4 mb-8">
+                <div className="relative flex-1 w-full">
+                    <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-400" />
                     <input
                         type="text"
-                        placeholder="Search posts..."
+                        placeholder="Search publications by title..."
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
-                        className="w-full pl-10 pr-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                        className="w-full pl-12 pr-4 py-3 bg-neutral-50 rounded-xl border-none focus:ring-2 focus:ring-primary-100 transition-all text-sm"
                     />
+                </div>
+                <div className="flex items-center gap-2 w-full md:w-auto">
+                    <button className="flex-1 md:flex-none flex items-center justify-center gap-2 px-6 py-3 bg-neutral-50 rounded-xl text-neutral-600 hover:bg-neutral-100 transition-all text-sm font-bold border border-neutral-100/50">
+                        <Filter className="w-4 h-4" />
+                        Status
+                    </button>
+                    <button className="flex-1 md:flex-none flex items-center justify-center gap-2 px-6 py-3 bg-neutral-50 rounded-xl text-neutral-600 hover:bg-neutral-100 transition-all text-sm font-bold border border-neutral-100/50">
+                        Date Range
+                    </button>
                 </div>
             </div>
 
-            {/* Posts Table */}
-            <div className="card overflow-hidden">
-                <div className="overflow-x-auto">
-                    <table className="w-full">
-                        <thead className="bg-neutral-50 border-b border-neutral-200">
-                            <tr>
-                                <th className="text-left px-6 py-3 text-xs font-semibold text-neutral-600 uppercase tracking-wider">
-                                    Title
-                                </th>
-                                <th className="text-left px-6 py-3 text-xs font-semibold text-neutral-600 uppercase tracking-wider">
-                                    Status
-                                </th>
-                                <th className="text-left px-6 py-3 text-xs font-semibold text-neutral-600 uppercase tracking-wider">
-                                    Updated
-                                </th>
-                                <th className="text-right px-6 py-3 text-xs font-semibold text-neutral-600 uppercase tracking-wider">
-                                    Actions
-                                </th>
-                            </tr>
-                        </thead>
-                        <tbody className="divide-y divide-neutral-200">
-                            {filteredPosts.map((post) => (
-                                <tr key={post.id} className="hover:bg-neutral-50 transition-colors">
-                                    <td className="px-6 py-4">
-                                        <div>
-                                            <div className="font-semibold text-neutral-900">{post.title}</div>
-                                            {post.excerpt && (
-                                                <div className="text-sm text-neutral-600 line-clamp-1">{post.excerpt}</div>
-                                            )}
-                                        </div>
-                                    </td>
-                                    <td className="px-6 py-4">
+            {/* Posts Grid */}
+            <div className="grid grid-cols-1 gap-4">
+                {filteredPosts.length > 0 ? (
+                    filteredPosts.map((post) => (
+                        <div
+                            key={post.id}
+                            className="group bg-white p-6 rounded-[2rem] border border-neutral-100 hover:border-primary-100 hover:shadow-xl hover:shadow-primary-50 transition-all duration-300 flex flex-col md:flex-row items-center justify-between gap-6"
+                        >
+                            <div className="flex items-center gap-6 flex-1 w-full">
+                                <div className="w-16 h-16 bg-neutral-50 rounded-[1.25rem] flex items-center justify-center text-neutral-400 group-hover:bg-primary-50 group-hover:text-primary-600 transition-colors flex-shrink-0">
+                                    <FileText className="w-7 h-7" />
+                                </div>
+                                <div className="min-w-0">
+                                    <div className="flex items-center gap-3 mb-1 flex-wrap">
+                                        <h3 className="text-xl font-bold text-neutral-900 group-hover:text-primary-700 transition-colors truncate">{post.title}</h3>
                                         <span
-                                            className={`inline-flex px-3 py-1 text-xs font-semibold rounded-full ${post.published
-                                                ? 'bg-green-100 text-green-700'
-                                                : 'bg-amber-100 text-amber-700'
+                                            className={`px-3 py-1 text-[9px] font-bold uppercase tracking-widest rounded-full ${post.published
+                                                ? 'bg-green-50 text-green-700 border border-green-100'
+                                                : 'bg-amber-50 text-amber-700 border border-amber-100'
                                                 }`}
                                         >
-                                            {post.published ? 'Published' : 'Draft'}
+                                            {post.published ? 'Live' : 'Draft'}
                                         </span>
-                                    </td>
-                                    <td className="px-6 py-4 text-sm text-neutral-600">
-                                        {formatDate(post.updated_at)}
-                                    </td>
-                                    <td className="px-6 py-4">
-                                        <div className="flex items-center justify-end gap-2">
-                                            <button
-                                                onClick={() => togglePublished(post.id, post.published)}
-                                                className="p-2 text-neutral-600 hover:text-primary-600 hover:bg-primary-50 rounded-lg transition-colors"
-                                                title={post.published ? 'Unpublish' : 'Publish'}
-                                            >
-                                                {post.published ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                                            </button>
-                                            <Link
-                                                href={`/admin/posts/edit/${post.id}`}
-                                                className="p-2 text-neutral-600 hover:text-primary-600 hover:bg-primary-50 rounded-lg transition-colors"
-                                                title="Edit"
-                                            >
-                                                <Edit className="w-4 h-4" />
-                                            </Link>
-                                            <button
-                                                onClick={() => deletePost(post.id)}
-                                                className="p-2 text-neutral-600 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-                                                title="Delete"
-                                            >
-                                                <Trash2 className="w-4 h-4" />
-                                            </button>
+                                    </div>
+                                    <div className="flex items-center gap-4 text-xs font-medium text-neutral-400">
+                                        <div className="flex items-center gap-1.5">
+                                            <Clock className="w-3.5 h-3.5" />
+                                            {formatDate(post.updated_at)}
                                         </div>
-                                    </td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
+                                        <div className="flex items-center gap-2">
+                                            {post.categories.map(cat => (
+                                                <span key={cat.id} className="text-primary-600/60 font-bold uppercase tracking-tighter">#{cat.name.replace(/\s+/g, '')}</span>
+                                            ))}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
 
-                    {filteredPosts.length === 0 && (
-                        <div className="text-center py-12">
-                            <p className="text-neutral-500">No posts found</p>
+                            <div className="flex items-center gap-2 w-full md:w-auto">
+                                <Link
+                                    href={`/blog/${post.slug}`}
+                                    target="_blank"
+                                    className="p-3 bg-neutral-50 text-neutral-400 hover:text-primary-600 rounded-xl transition-all"
+                                    title="View Public Link"
+                                >
+                                    <ExternalLink className="w-5 h-5" />
+                                </Link>
+                                <Link
+                                    href={`/admin/posts/edit/${post.id}`}
+                                    className="p-3 bg-neutral-50 text-neutral-400 hover:text-primary-600 rounded-xl transition-all"
+                                    title="Edit Publication"
+                                >
+                                    <Edit2 className="w-5 h-5" />
+                                </Link>
+                                <button
+                                    onClick={() => handleDelete(post.id)}
+                                    className="p-3 bg-neutral-50 text-neutral-400 hover:text-red-600 rounded-xl transition-all"
+                                    title="Delete Forever"
+                                >
+                                    <Trash2 className="w-5 h-5" />
+                                </button>
+                                <div className="md:hidden">
+                                    <button className="p-3 text-neutral-400"><MoreVertical className="w-5 h-5" /></button>
+                                </div>
+                            </div>
                         </div>
-                    )}
-                </div>
+                    ))
+                ) : (
+                    <div className="py-32 text-center bg-white rounded-[3rem] border-2 border-dashed border-neutral-100">
+                        <div className="w-20 h-20 bg-neutral-50 rounded-full flex items-center justify-center mx-auto mb-6">
+                            <Search className="w-8 h-8 text-neutral-200" />
+                        </div>
+                        <h3 className="text-xl font-bold text-neutral-900 mb-2 font-serif italic">The Library is Empty</h3>
+                        <p className="text-neutral-400 max-w-sm mx-auto">Adjust your search parameters or manifest a new publication to begin.</p>
+                    </div>
+                )}
             </div>
         </div>
     );
