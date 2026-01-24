@@ -5,6 +5,7 @@ import { useRouter, usePathname } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { LayoutDashboard, FileText, FolderOpen, LogOut, Loader2 } from 'lucide-react';
+import { User } from '@supabase/supabase-js';
 
 export default function AdminLayout({
     children,
@@ -14,23 +15,23 @@ export default function AdminLayout({
     const router = useRouter();
     const pathname = usePathname();
     const [loading, setLoading] = useState(true);
-    const [user, setUser] = useState<any>(null);
+    const [user, setUser] = useState<User | null>(null);
 
     useEffect(() => {
+        const checkAuth = async () => {
+            const { data: { user } } = await supabase.auth.getUser();
+
+            if (!user && pathname !== '/admin/login') {
+                router.push('/admin/login');
+            } else {
+                setUser(user);
+            }
+
+            setLoading(false);
+        };
+
         checkAuth();
-    }, []);
-
-    const checkAuth = async () => {
-        const { data: { user } } = await supabase.auth.getUser();
-
-        if (!user && pathname !== '/admin/login') {
-            router.push('/admin/login');
-        } else {
-            setUser(user);
-        }
-
-        setLoading(false);
-    };
+    }, [pathname, router]);
 
     const handleLogout = async () => {
         await supabase.auth.signOut();
@@ -87,8 +88,8 @@ export default function AdminLayout({
                                     key={item.name}
                                     href={item.href}
                                     className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${isActive
-                                            ? 'bg-primary-50 text-primary-700 font-medium'
-                                            : 'text-neutral-600 hover:bg-neutral-100'
+                                        ? 'bg-primary-50 text-primary-700 font-medium'
+                                        : 'text-neutral-600 hover:bg-neutral-100'
                                         }`}
                                 >
                                     <Icon className="w-5 h-5" />

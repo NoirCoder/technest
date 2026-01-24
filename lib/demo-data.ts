@@ -1,4 +1,4 @@
-import { Category, Post, PostWithCategories } from './supabase';
+import { Category, PostWithCategories } from './supabase';
 
 export const DEMO_CATEGORIES: Category[] = [
     {

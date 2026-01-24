@@ -1,6 +1,6 @@
 'use client';
 
-import { supabase } from '@/lib/supabase';
+import { supabase, Category } from '@/lib/supabase';
 import { slugify } from '@/lib/slugify';
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
@@ -15,7 +15,7 @@ interface EditPostPageProps {
 export default function EditPostPage({ params }: EditPostPageProps) {
     const router = useRouter();
     const [postId, setPostId] = useState<string | null>(null);
-    const [categories, setCategories] = useState<any[]>([]);
+    const [categories, setCategories] = useState<Category[]>([]);
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
     const [formData, setFormData] = useState({
@@ -32,54 +32,57 @@ export default function EditPostPage({ params }: EditPostPageProps) {
     });
 
     useEffect(() => {
+        const fetchCategories = async () => {
+            const { data } = await supabase
+                .from('categories')
+                .select('*')
+                .order('name');
+
+            if (data) {
+                setCategories(data);
+            }
+        };
+
+        const fetchPost = async (id: string) => {
+            const { data: post, error } = await supabase
+                .from('posts')
+                .select(`
+            *,
+            post_categories(category_id)
+          `)
+                .eq('id', id)
+                .single();
+
+            if (error || !post) {
+                router.push('/admin/posts');
+                return;
+            }
+
+            // Fix implicit any on post categories map
+            const postCats = post.post_categories as unknown as { category_id: string }[] | null;
+
+            setFormData({
+                title: post.title,
+                slug: post.slug,
+                excerpt: post.excerpt || '',
+                content: post.content,
+                featured_image: post.featured_image || '',
+                meta_title: post.meta_title || '',
+                meta_description: post.meta_description || '',
+                published: post.published,
+                featured: post.featured,
+                selectedCategories: postCats?.map(pc => pc.category_id) || [],
+            });
+
+            setLoading(false);
+        };
+
         params.then(p => {
             setPostId(p.id);
+            fetchCategories();
             fetchPost(p.id);
         });
-        fetchCategories();
-    }, []);
-
-    const fetchCategories = async () => {
-        const { data } = await supabase
-            .from('categories')
-            .select('*')
-            .order('name');
-
-        if (data) {
-            setCategories(data);
-        }
-    };
-
-    const fetchPost = async (id: string) => {
-        const { data: post, error } = await supabase
-            .from('posts')
-            .select(`
-        *,
-        post_categories(category_id)
-      `)
-            .eq('id', id)
-            .single();
-
-        if (error || !post) {
-            router.push('/admin/posts');
-            return;
-        }
-
-        setFormData({
-            title: post.title,
-            slug: post.slug,
-            excerpt: post.excerpt || '',
-            content: post.content,
-            featured_image: post.featured_image || '',
-            meta_title: post.meta_title || '',
-            meta_description: post.meta_description || '',
-            published: post.published,
-            featured: post.featured,
-            selectedCategories: post.post_categories?.map((pc: any) => pc.category_id) || [],
-        });
-
-        setLoading(false);
-    };
+    }, [params, router]);
 
     const handleTitleChange = (title: string) => {
         setFormData({
@@ -142,8 +145,8 @@ export default function EditPostPage({ params }: EditPostPageProps) {
             }
 
             router.push('/admin/posts');
-        } catch (error: any) {
-            alert('Error updating post: ' + error.message);
+        } catch (error: unknown) {
+            alert('Error updating post: ' + (error instanceof Error ? error.message : 'Unknown error'));
         } finally {
             setSaving(false);
         }

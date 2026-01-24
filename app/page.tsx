@@ -1,4 +1,4 @@
-import { supabase } from '@/lib/supabase';
+import { supabase, PostWithCategories, Category } from '@/lib/supabase';
 import { DEMO_POSTS } from '@/lib/demo-data';
 import PostCard from '@/components/PostCard';
 import Newsletter from '@/components/Newsletter';
@@ -7,7 +7,7 @@ import Link from 'next/link';
 
 export const revalidate = 3600; // Revalidate every hour
 
-async function getLatestPosts() {
+async function getLatestPosts(): Promise<PostWithCategories[]> {
     try {
         const { data, error } = await supabase
             .from('posts')
@@ -24,10 +24,16 @@ async function getLatestPosts() {
             return DEMO_POSTS;
         }
 
-        return data.map(post => ({
-            ...post,
-            categories: post.categories?.map((pc: any) => pc.category) || [],
-        }));
+        return data.map(post => {
+            const typedPost = post as unknown as {
+                categories: { category: Category }[]
+            } & PostWithCategories;
+
+            return {
+                ...typedPost,
+                categories: typedPost.categories?.map(pc => pc.category) || [],
+            };
+        }) as PostWithCategories[];
     } catch (e) {
         console.log('Error fetching posts, using demo data', e);
         return DEMO_POSTS;
@@ -55,11 +61,11 @@ export default async function HomePage() {
                             We scour the market to find the best productivity gear for your setup. curated guides, detailed comparisons, and top-rated recommendations for 2026.
                         </p>
                         <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-                            <Link href="#latest" className="btn-primary w-full sm:w-auto text-base px-8 py-4">
+                            <Link href="#latest" className="btn-primary w-full sm:w-auto text-base px-8 py-4 text-white hover:bg-primary-700">
                                 View Top Picks
-                                <ArrowRight className="ml-2 w-4 h-4" />
+                                <ArrowRight className="ml-2 w-4 h-4 inline" />
                             </Link>
-                            <Link href="/about" className="btn-secondary w-full sm:w-auto text-base px-8 py-4 border-neutral-200">
+                            <Link href="/about" className="btn-secondary w-full sm:w-auto text-base px-8 py-4 border-neutral-200 hover:bg-neutral-50">
                                 How We Choose
                             </Link>
                         </div>
@@ -129,11 +135,9 @@ export default async function HomePage() {
                     <div className="text-center mb-12">
                         <h2 className="text-3xl font-bold font-serif text-neutral-900 mb-4">Explore by Topic</h2>
                         <p className="text-neutral-600 max-w-2xl mx-auto">
-                            Find exactly what you need to upgrade your setup. We've organized the best products into these core categories.
+                            Find exactly what you need to upgrade your setup. We&apos;ve organized the best products into these core categories.
                         </p>
                     </div>
-
-
 
                     <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 md:gap-6">
                         <Link

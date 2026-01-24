@@ -1,6 +1,6 @@
 'use client';
 
-import { supabase } from '@/lib/supabase';
+import { supabase, Category } from '@/lib/supabase';
 import { slugify } from '@/lib/slugify';
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
@@ -10,7 +10,7 @@ import Link from 'next/link';
 
 export default function NewPostPage() {
     const router = useRouter();
-    const [categories, setCategories] = useState<any[]>([]);
+    const [categories, setCategories] = useState<Category[]>([]);
     const [loading, setLoading] = useState(false);
     const [formData, setFormData] = useState({
         title: '',
@@ -102,8 +102,8 @@ export default function NewPostPage() {
             }
 
             router.push('/admin/posts');
-        } catch (error: any) {
-            alert('Error creating post: ' + error.message);
+        } catch (error: unknown) {
+            alert('Error creating post: ' + (error instanceof Error ? error.message : 'Unknown error'));
         } finally {
             setLoading(false);
         }

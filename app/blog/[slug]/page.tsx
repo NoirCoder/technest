@@ -1,4 +1,4 @@
-import { supabase } from '@/lib/supabase';
+import { supabase, Category, PostWithCategories, Post } from '@/lib/supabase';
 import { DEMO_POSTS } from '@/lib/demo-data'; // Import demo data
 import { notFound } from 'next/navigation';
 import Image from 'next/image';
@@ -13,7 +13,7 @@ import ReviewOverview from '@/components/ReviewOverview';
 import ReadingProgress from '@/components/ReadingProgress';
 import Breadcrumbs from '@/components/Breadcrumbs';
 import ShareButtons from '@/components/ShareButtons';
-import { Clock, Calendar } from 'lucide-react';
+import { Clock } from 'lucide-react';
 import { Metadata } from 'next';
 
 export const revalidate = 3600; // Revalidate every hour
@@ -42,16 +42,23 @@ export async function generateMetadata({ params }: BlogPostPageProps): Promise<M
     const { slug } = await params;
 
     // Try DB
-    let { data: post } = await supabase
+    let post: PostWithCategories | null = null;
+
+    // First try to get it from DB
+    const { data } = await supabase
         .from('posts')
         .select('*')
         .eq('slug', slug)
         .eq('published', true)
         .single();
 
+    if (data) {
+        post = data as unknown as PostWithCategories;
+    }
+
     // Fallback
     if (!post) {
-        post = DEMO_POSTS.find(p => p.slug === slug) as any || null;
+        post = DEMO_POSTS.find(p => p.slug === slug) as unknown as PostWithCategories || null;
     }
 
     if (!post) {
@@ -69,8 +76,10 @@ export async function generateMetadata({ params }: BlogPostPageProps): Promise<M
 export default async function BlogPostPage({ params }: BlogPostPageProps) {
     const { slug } = await params;
 
+    let post: PostWithCategories | null = null;
+
     // 1. Try DB
-    let { data: post, error } = await supabase
+    const { data: dbPost } = await supabase
         .from('posts')
         .select(`
       *,
@@ -80,32 +89,48 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
         .eq('published', true)
         .single();
 
+    if (dbPost) {
+        // Correctly cast the Supabase join result
+        type DBPostResult = Post & { categories: { category: Category }[] };
+        const typedDbPost = dbPost as unknown as DBPostResult;
+
+        post = {
+            ...typedDbPost,
+            categories: typedDbPost.categories.map(c => c.category)
+        };
+    }
+
     // 2. Fallback to demo
     if (!post) {
-        post = DEMO_POSTS.find(p => p.slug === slug) as any || null;
+        post = DEMO_POSTS.find(p => p.slug === slug) as unknown as PostWithCategories || null;
     }
 
     if (!post) {
         notFound();
     }
 
-    const categories = post.categories?.map((c: any) => c.category || c).filter((c: any) => c && c.name) || [];
+    // categories are already mapped to Category[] in the step above or come from DEMO_POSTS
+    const categories = post.categories || [];
+
     const readTime = estimateReadTime(post.content);
     const headings = extractHeadings(post.content);
 
     // Fetch related posts (same category)
-    let relatedPosts: any[] = [];
+    let relatedPosts: PostWithCategories[] = [];
     if (categories.length > 0) {
+        const categoryId = categories[0].id;
+
         // Try DB for related
         const { data: relatedPostCategories } = await supabase
             .from('post_categories')
             .select('post_id')
-            .eq('category_id', categories[0].id)
+            .eq('category_id', categoryId)
             .neq('post_id', post.id)
             .limit(3);
 
         if (relatedPostCategories && relatedPostCategories.length > 0) {
-            const postIds = relatedPostCategories.map(pc => pc.post_id);
+            const typedRPC = relatedPostCategories as unknown as { post_id: string }[];
+            const postIds = typedRPC.map(pc => pc.post_id);
             const { data } = await supabase
                 .from('posts')
                 .select(`
@@ -116,16 +141,22 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
                 .eq('published', true)
                 .limit(3);
 
-            relatedPosts = data?.map(p => ({
-                ...p,
-                categories: p.categories?.map((pc: any) => pc.category) || [],
-            })) || [];
+            if (data) {
+                type RelatedPostDBResult = Post & { categories: { category: Category }[] };
+                const typedData = data as unknown as RelatedPostDBResult[];
+
+                relatedPosts = typedData.map(p => ({
+                    ...p,
+                    categories: p.categories.map(c => c.category)
+                }));
+            }
         }
 
         // Fallback logic requires checking if relatedPosts is still empty
         if (relatedPosts.length === 0) {
-            relatedPosts = DEMO_POSTS
-                .filter(p => p.id !== post.id && p.categories.some(c => c.id === categories[0].id))
+            const demoPosts = DEMO_POSTS as unknown as PostWithCategories[];
+            relatedPosts = demoPosts
+                .filter(p => p.id !== post.id && p.categories.some(c => c.id === categoryId))
                 .slice(0, 3);
         }
     }
@@ -166,7 +197,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
                         {/* Categories */}
                         {categories.length > 0 && (
                             <div className="flex flex-wrap justify-center md:justify-start gap-2 mb-6">
-                                {categories.map((category: any) => (
+                                {categories.map((category) => (
                                     <Link
                                         key={category.id}
                                         href={`/category/${category.slug}`}
@@ -261,13 +292,13 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
                                     </ReactMarkdown>
 
                                     {/* Verdict / Review Score (If applicable) */}
-                                    {(post as any).review && (
+                                    {post.review && (
                                         <ReviewOverview
-                                            rating={(post as any).review.rating}
-                                            pros={(post as any).review.pros}
-                                            cons={(post as any).review.cons}
-                                            verdict={(post as any).review.verdict}
-                                            productName={(post as any).review.productName}
+                                            rating={post.review.rating}
+                                            pros={post.review.pros}
+                                            cons={post.review.cons}
+                                            verdict={post.review.verdict}
+                                            productName={post.review.productName}
                                         />
                                     )}
                                 </div>

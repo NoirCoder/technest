@@ -1,14 +1,14 @@
 'use client';
 
-import { supabase } from '@/lib/supabase';
+import { supabase, Post } from '@/lib/supabase';
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { Plus, Search, Eye, EyeOff, Edit, Trash2 } from 'lucide-react';
 import { formatDate } from '@/lib/markdown';
 
 export default function PostsPage() {
-    const [posts, setPosts] = useState<any[]>([]);
-    const [filteredPosts, setFilteredPosts] = useState<any[]>([]);
+    const [posts, setPosts] = useState<Post[]>([]);
+    const [filteredPosts, setFilteredPosts] = useState<Post[]>([]);
     const [searchQuery, setSearchQuery] = useState('');
     const [loading, setLoading] = useState(true);
 
@@ -24,7 +24,7 @@ export default function PostsPage() {
     }, [searchQuery, posts]);
 
     const fetchPosts = async () => {
-        const { data, error } = await supabase
+        const { data } = await supabase
             .from('posts')
             .select('*')
             .order('updated_at', { ascending: false });
@@ -128,8 +128,8 @@ export default function PostsPage() {
                                     <td className="px-6 py-4">
                                         <span
                                             className={`inline-flex px-3 py-1 text-xs font-semibold rounded-full ${post.published
-                                                    ? 'bg-green-100 text-green-700'
-                                                    : 'bg-amber-100 text-amber-700'
+                                                ? 'bg-green-100 text-green-700'
+                                                : 'bg-amber-100 text-amber-700'
                                                 }`}
                                         >
                                             {post.published ? 'Published' : 'Draft'}

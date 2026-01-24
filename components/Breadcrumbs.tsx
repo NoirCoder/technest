@@ -2,7 +2,6 @@
 
 import Link from 'next/link';
 import { ChevronRight, Home } from 'lucide-react';
-import { usePathname } from 'next/navigation';
 
 interface BreadcrumbItem {
     label: string;
@@ -51,8 +50,8 @@ export default function Breadcrumbs({ items }: BreadcrumbsProps) {
                         <Link
                             href={item.href}
                             className={`hover:text-primary-600 transition-colors ${index === items.length - 1
-                                    ? 'font-medium text-neutral-900 pointer-events-none'
-                                    : ''
+                                ? 'font-medium text-neutral-900 pointer-events-none'
+                                : ''
                                 }`}
                             aria-current={index === items.length - 1 ? 'page' : undefined}
                         >

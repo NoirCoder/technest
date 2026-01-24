@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
-import { Search, X, ArrowRight, Loader } from 'lucide-react';
+import { Search, X, Loader } from 'lucide-react';
 import Link from 'next/link';
 import { createClient } from '@supabase/supabase-js';
 import { DEMO_POSTS } from '@/lib/demo-data';
@@ -17,9 +17,15 @@ interface SearchOverlayProps {
     onClose: () => void;
 }
 
+interface SearchResult {
+    title: string;
+    slug: string;
+    excerpt?: string | null;
+}
+
 export default function SearchOverlay({ isOpen, onClose }: SearchOverlayProps) {
     const [query, setQuery] = useState('');
-    const [results, setResults] = useState<any[]>([]);
+    const [typedResults, setTypedResults] = useState<SearchResult[]>([]);
     const [isSearching, setIsSearching] = useState(false);
     const inputRef = useRef<HTMLInputElement>(null);
 
@@ -37,7 +43,7 @@ export default function SearchOverlay({ isOpen, onClose }: SearchOverlayProps) {
     useEffect(() => {
         const handleSearch = async () => {
             if (!query.trim()) {
-                setResults([]);
+                setTypedResults([]);
                 return;
             }
 
@@ -45,7 +51,7 @@ export default function SearchOverlay({ isOpen, onClose }: SearchOverlayProps) {
 
             try {
                 // 1. Try Supabase Search
-                const { data, error } = await supabase
+                const { data } = await supabase
                     .from('posts')
                     .select('title, slug, excerpt, published_at')
                     .eq('published', true)
@@ -53,14 +59,14 @@ export default function SearchOverlay({ isOpen, onClose }: SearchOverlayProps) {
                     .limit(5);
 
                 if (data && data.length > 0) {
-                    setResults(data);
+                    setTypedResults(data);
                 } else {
                     // 2. Fallback to Demo Data search
                     const demoResults = DEMO_POSTS.filter(post =>
                         post.title.toLowerCase().includes(query.toLowerCase()) ||
                         post.excerpt?.toLowerCase().includes(query.toLowerCase())
                     ).slice(0, 5);
-                    setResults(demoResults);
+                    setTypedResults(demoResults);
                 }
             } catch (e) {
                 console.error('Search error', e);
@@ -68,7 +74,7 @@ export default function SearchOverlay({ isOpen, onClose }: SearchOverlayProps) {
                 const demoResults = DEMO_POSTS.filter(post =>
                     post.title.toLowerCase().includes(query.toLowerCase())
                 ).slice(0, 5);
-                setResults(demoResults);
+                setTypedResults(demoResults);
             } finally {
                 setIsSearching(false);
             }
@@ -116,9 +122,9 @@ export default function SearchOverlay({ isOpen, onClose }: SearchOverlayProps) {
                                 <Loader className="w-6 h-6 animate-spin mx-auto mb-2" />
                                 <p className="text-sm">Searching...</p>
                             </div>
-                        ) : results.length > 0 ? (
+                        ) : typedResults.length > 0 ? (
                             <ul className="py-2">
-                                {results.map((result) => (
+                                {typedResults.map((result) => (
                                     <li key={result.slug}>
                                         <Link
                                             href={`/blog/${result.slug}`}
@@ -137,7 +143,7 @@ export default function SearchOverlay({ isOpen, onClose }: SearchOverlayProps) {
                             </ul>
                         ) : query ? (
                             <div className="p-8 text-center text-neutral-500">
-                                <p>No results found for "{query}"</p>
+                                <p>No results found for &quot;{query}&quot;</p>
                             </div>
                         ) : (
                             <div className="p-8 text-center text-neutral-400">

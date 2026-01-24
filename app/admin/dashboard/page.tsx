@@ -1,6 +1,6 @@
 'use client';
 
-import { supabase } from '@/lib/supabase';
+import { supabase, Post } from '@/lib/supabase';
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { Plus, FileText, Eye, EyeOff } from 'lucide-react';
@@ -12,7 +12,7 @@ export default function AdminDashboard() {
         publishedPosts: 0,
         draftPosts: 0,
     });
-    const [recentPosts, setRecentPosts] = useState<any[]>([]);
+    const [recentPosts, setRecentPosts] = useState<Post[]>([]);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
@@ -127,8 +127,8 @@ export default function AdminDashboard() {
                                 </div>
                                 <span
                                     className={`px-3 py-1 text-xs font-semibold rounded-full ${post.published
-                                            ? 'bg-green-100 text-green-700'
-                                            : 'bg-amber-100 text-amber-700'
+                                        ? 'bg-green-100 text-green-700'
+                                        : 'bg-amber-100 text-amber-700'
                                         }`}
                                 >
                                     {post.published ? 'Published' : 'Draft'}

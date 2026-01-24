@@ -1,4 +1,4 @@
-import { supabase } from '@/lib/supabase';
+import { supabase, PostWithCategories, Category, Post } from '@/lib/supabase';
 import { DEMO_CATEGORIES, DEMO_POSTS } from '@/lib/demo-data';
 import PostCard from '@/components/PostCard';
 import { notFound } from 'next/navigation';
@@ -32,24 +32,26 @@ export async function generateMetadata({ params }: CategoryPageProps): Promise<M
     const { slug } = await params;
 
     // Try DB first
-    let { data: category } = await supabase
+    const { data: category } = await supabase
         .from('categories')
         .select('*')
         .eq('slug', slug)
         .single();
 
+    let finalCategory = category;
+
     // Fallback to demo data
-    if (!category) {
-        category = DEMO_CATEGORIES.find(c => c.slug === slug) || null;
+    if (!finalCategory) {
+        finalCategory = DEMO_CATEGORIES.find(c => c.slug === slug) || null;
     }
 
-    if (!category) {
+    if (!finalCategory) {
         return {};
     }
 
     return generateSEOMetadata({
-        title: category.name,
-        description: category.description || `Browse all ${category.name} reviews and recommendations`,
+        title: finalCategory.name,
+        description: finalCategory.description || `Browse all ${finalCategory.name} reviews and recommendations`,
     });
 }
 
@@ -57,11 +59,13 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
     const { slug } = await params;
 
     // 1. Try to fetch category from DB
-    let { data: category, error: categoryError } = await supabase
+    const { data: dbCategory } = await supabase
         .from('categories')
         .select('*')
         .eq('slug', slug)
         .single();
+
+    let category = dbCategory;
 
     // 2. Fallback to demo category
     if (!category) {
@@ -73,7 +77,7 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
     }
 
     // 3. Try to fetch posts from DB
-    let postsWithCategories: any[] = [];
+    let postsWithCategories: PostWithCategories[] = [];
 
     const { data: postCategories } = await supabase
         .from('post_categories')
@@ -83,22 +87,31 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
         .eq('category_id', category.id);
 
     if (postCategories && postCategories.length > 0) {
-        const postIds = postCategories.map((pc: any) => pc.post.id).filter(Boolean);
-        const { data: posts } = await supabase
-            .from('posts')
-            .select(`
-        *,
-        categories:post_categories(category:categories(*))
-      `)
-            .in('id', postIds)
-            .eq('published', true)
-            .order('published_at', { ascending: false });
+        // Correctly type the join result to avoid 'any'
+        type PostCategoryResult = { post: Post | null };
+        const typedPC = postCategories as unknown as PostCategoryResult[];
+        const postIds = typedPC.map(pc => pc.post?.id).filter((id): id is string => !!id);
 
-        if (posts) {
-            postsWithCategories = posts.map(post => ({
-                ...post,
-                categories: post.categories?.map((pc: any) => pc.category) || [],
-            }));
+        if (postIds.length > 0) {
+            const { data: posts } = await supabase
+                .from('posts')
+                .select(`
+            *,
+            categories:post_categories(category:categories(*))
+          `)
+                .in('id', postIds)
+                .eq('published', true)
+                .order('published_at', { ascending: false });
+
+            if (posts) {
+                type DBPostResult = Post & { categories: { category: Category }[] };
+                const typedPosts = posts as unknown as DBPostResult[];
+
+                postsWithCategories = typedPosts.map(post => ({
+                    ...post,
+                    categories: post.categories.map(c => c.category),
+                }));
+            }
         }
     }
 
