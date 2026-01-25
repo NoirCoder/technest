@@ -110,11 +110,30 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
         notFound();
     }
 
+    // 3. Fetch Affiliates to parse shorthands
+    const { data: affiliates } = await supabase.from('affiliates').select('*');
+
+    // Parse shorthands [[affiliate:Amazon]] e.g.
+    const parseAffiliates = (content: string) => {
+        if (!affiliates || affiliates.length === 0) return content;
+
+        let processedContent = content;
+        affiliates.forEach(aff => {
+            const regex = new RegExp(`\\[\\[affiliate:${aff.name}\\]\\]`, 'g');
+            // Create a professional link or block
+            const trackedLink = `[${aff.name}](${aff.base_url}?ref=${aff.affiliate_code || 'technest'})`;
+            processedContent = processedContent.replace(regex, trackedLink);
+        });
+        return processedContent;
+    };
+
+    const processedContent = parseAffiliates(post.content);
+
     // categories are already mapped to Category[] in the step above or come from DEMO_POSTS
     const categories = post.categories || [];
 
-    const readTime = estimateReadTime(post.content);
-    const headings = extractHeadings(post.content);
+    const readTime = estimateReadTime(processedContent);
+    const headings = extractHeadings(processedContent);
 
     // Fetch related posts (same category)
     let relatedPosts: PostWithCategories[] = [];
@@ -293,7 +312,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
                                             },
                                         }}
                                     >
-                                        {post.content}
+                                        {processedContent}
                                     </ReactMarkdown>
 
                                     {/* Verdict / Review Score (If applicable) */}

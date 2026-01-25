@@ -16,6 +16,7 @@ export async function uploadImage(file: File, bucket: string = 'images'): Promis
         .upload(filePath, file);
 
     if (uploadError) {
+        console.error('Supabase Storage Error:', uploadError);
         throw uploadError;
     }
 

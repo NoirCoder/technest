@@ -54,3 +54,12 @@ export interface Post {
 export interface PostWithCategories extends Post {
     categories: Category[];
 }
+
+export interface Affiliate {
+    id: string;
+    name: string;
+    base_url: string;
+    affiliate_code: string | null;
+    description: string | null;
+    created_at: string;
+}
