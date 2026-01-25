@@ -31,6 +31,7 @@ interface SEOSidebarProps {
 }
 
 export default function SEOSidebar({ formData, onChange }: SEOSidebarProps) {
+    const [error, setError] = useState<string | null>(null);
     const [score, setScore] = useState(0);
     const [loading, setLoading] = useState(false);
 
@@ -46,11 +47,12 @@ export default function SEOSidebar({ formData, onChange }: SEOSidebarProps) {
 
     const handleAIGenerate = async () => {
         if (!formData.content || formData.content.length < 100) {
-            alert("Draft needs more content for AI analysis.");
+            setError("Draft needs more content (min 100 chars) for tactical AI analysis.");
             return;
         }
 
         setLoading(true);
+        setError(null);
         try {
             const result = await generateSEOContent(formData.content);
             if (result.success && result.data) {
@@ -60,10 +62,10 @@ export default function SEOSidebar({ formData, onChange }: SEOSidebarProps) {
                     excerpt: result.data.excerpt
                 });
             } else {
-                alert(result.error);
+                setError(result.error || "Tactical bypass failed.");
             }
-        } catch (error) {
-            alert("Failed to connect to Gemini AI.");
+        } catch (err: any) {
+            setError("Failed to connect to Gemini AI Satellite.");
         } finally {
             setLoading(false);
         }
@@ -111,6 +113,25 @@ export default function SEOSidebar({ formData, onChange }: SEOSidebarProps) {
                             <span className="text-[11px] font-black tracking-widest">INITIALIZE GEMINI SEO</span>
                         </div>
                     </button>
+
+                    {error && (
+                        <motion.div
+                            initial={{ opacity: 0, y: 10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            className="p-6 bg-red-400 border-[3px] border-neutral-900 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] text-neutral-900"
+                        >
+                            <div className="flex items-start gap-3 mb-3">
+                                <AlertCircle className="w-5 h-5 shrink-0 mt-0.5" />
+                                <span className="text-[10px] font-black uppercase tracking-widest">Diagnostic Telemetry:</span>
+                            </div>
+                            <textarea
+                                readOnly
+                                value={error}
+                                className="w-full bg-white/20 border-none outline-none text-[9px] font-mono leading-relaxed p-3 h-32 resize-none select-all"
+                            />
+                            <p className="mt-3 text-[8px] font-black uppercase tracking-tighter opacity-60 italic">Select text above to copy for support review</p>
+                        </motion.div>
+                    )}
                 </div>
             </div>
 
