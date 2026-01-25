@@ -10,8 +10,11 @@ import {
     BarChart,
     ChevronDown,
     Globe,
-    Zap
+    Zap,
+    Sparkles,
+    Loader2
 } from 'lucide-react';
+import { generateSEOContent } from '@/lib/gemini';
 import { cn } from '@/lib/utils';
 import { useEffect, useState } from 'react';
 
@@ -22,12 +25,14 @@ interface SEOSidebarProps {
         meta_title: string;
         meta_description: string;
         excerpt: string;
+        content: string;
     };
     onChange: (updates: any) => void;
 }
 
 export default function SEOSidebar({ formData, onChange }: SEOSidebarProps) {
     const [score, setScore] = useState(0);
+    const [loading, setLoading] = useState(false);
 
     // Basic SEO Scoring Logic
     useEffect(() => {
@@ -38,6 +43,31 @@ export default function SEOSidebar({ formData, onChange }: SEOSidebarProps) {
         if (formData.excerpt.length > 50) total += 25;
         setScore(total);
     }, [formData]);
+
+    const handleAIGenerate = async () => {
+        if (!formData.content || formData.content.length < 100) {
+            alert("Draft needs more content for AI analysis.");
+            return;
+        }
+
+        setLoading(true);
+        try {
+            const result = await generateSEOContent(formData.content);
+            if (result.success && result.data) {
+                onChange({
+                    meta_title: result.data.title,
+                    meta_description: result.data.description,
+                    excerpt: result.data.excerpt
+                });
+            } else {
+                alert(result.error);
+            }
+        } catch (error) {
+            alert("Failed to connect to Gemini AI.");
+        } finally {
+            setLoading(false);
+        }
+    };
 
     return (
         <div className="space-y-8">
@@ -55,6 +85,15 @@ export default function SEOSidebar({ formData, onChange }: SEOSidebarProps) {
                             {score > 70 ? 'Optimized' : 'Needs Review'}
                         </div>
                     </div>
+
+                    <button
+                        onClick={handleAIGenerate}
+                        disabled={loading}
+                        className="w-full h-12 rounded-xl bg-white text-black font-bold text-xs flex items-center justify-center gap-2 hover:bg-neutral-100 transition-all shadow-xl disabled:opacity-50"
+                    >
+                        {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Sparkles className="w-4 h-4" />}
+                        Generate SEO (Gemini AI)
+                    </button>
 
                     <div className="space-y-2">
                         <div className="flex justify-between items-baseline">

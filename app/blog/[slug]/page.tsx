@@ -204,24 +204,24 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
             <article className="py-8 md:py-12">
                 <div className="container-custom">
                     {/* Breadcrumbs for SEO & Navigation */}
-                    <div className="max-w-4xl mx-auto mb-6">
+                    <div className="max-w-4xl mx-auto mb-8">
                         <Breadcrumbs items={[
-                            { label: 'Blog', href: '/blog' },
-                            { label: categories[0]?.name || 'Post', href: categories[0] ? `/category/${categories[0].slug}` : '#' },
-                            { label: post.title, href: `/blog/${post.slug}` }
+                            { label: 'BLOG', href: '/blog' },
+                            { label: categories[0]?.name?.toUpperCase() || 'POST', href: categories[0] ? `/category/${categories[0].slug}` : '#' },
+                            { label: post.title.toUpperCase(), href: `/blog/${post.slug}` }
                         ]} />
                     </div>
 
                     {/* Header */}
-                    <div className="max-w-4xl mx-auto mb-10 text-center md:text-left">
+                    <div className="max-w-4xl mx-auto mb-12 text-left">
                         {/* Categories */}
                         {categories.length > 0 && (
-                            <div className="flex flex-wrap justify-center md:justify-start gap-2 mb-6">
+                            <div className="flex flex-wrap justify-start gap-3 mb-8">
                                 {categories.map((category) => (
                                     <Link
                                         key={category.id}
                                         href={`/category/${category.slug}`}
-                                        className="inline-block px-4 py-1.5 text-xs font-bold tracking-wide text-primary-700 bg-primary-50 rounded-full hover:bg-primary-100 transition-colors uppercase"
+                                        className="inline-block px-5 py-2 text-[10px] font-black tracking-[0.2em] text-neutral-900 bg-primary-400 border-[2px] border-neutral-900 shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all uppercase"
                                     >
                                         {category.name}
                                     </Link>
@@ -230,35 +230,34 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
                         )}
 
                         {/* Title */}
-                        <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold font-serif text-neutral-900 mb-8 text-balance leading-tight">
+                        <h1 className="text-5xl md:text-6xl lg:text-7xl font-black text-neutral-900 mb-10 leading-[0.95] tracking-tighter uppercase">
                             {post.title}
                         </h1>
 
-                        {/* Meta - Enhanced design */}
-                        <div className="flex flex-wrap items-center justify-center md:justify-start gap-6 text-neutral-500 text-sm border-b border-neutral-100 pb-8">
-                            <div className="flex items-center gap-2">
-                                <div className="w-10 h-10 rounded-full bg-primary-100 flex items-center justify-center text-primary-700 font-bold">
+                        {/* Meta - Enhanced brutalist design */}
+                        <div className="flex flex-wrap items-center justify-start gap-8 text-neutral-500 text-sm border-t-[3px] border-neutral-900 pt-8">
+                            <div className="flex items-center gap-4">
+                                <div className="w-12 h-12 bg-neutral-900 text-white flex items-center justify-center font-black text-xs border-[2px] border-neutral-900">
                                     TN
                                 </div>
                                 <div>
-                                    <span className="block text-neutral-900 font-semibold">TechNest Editor</span>
-                                    <time dateTime={post.published_at || post.created_at}>
-                                        Updated {formatDate(post.published_at || post.created_at)}
+                                    <span className="block text-neutral-900 font-black uppercase text-[10px] tracking-widest">TechNest Intelligence</span>
+                                    <time dateTime={post.published_at || post.created_at} className="text-[10px] font-bold text-neutral-400">
+                                        REVISED {formatDate(post.published_at || post.created_at).toUpperCase()}
                                     </time>
                                 </div>
                             </div>
-                            <div className="h-8 w-px bg-neutral-200 hidden md:block"></div>
-                            <div className="flex items-center gap-2">
-                                <Clock className="w-5 h-5" />
-                                <span>{readTime} min read</span>
+                            <div className="flex items-center gap-2 bg-neutral-50 border-[1.5px] border-neutral-900 px-4 py-2 font-black text-[10px] uppercase tracking-widest text-neutral-900 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
+                                <Clock className="w-4 h-4" />
+                                <span>{readTime} MIN READ</span>
                             </div>
                         </div>
                     </div>
 
                     {/* Featured Image - Wide */}
                     {post.featured_image && (
-                        <div className="max-w-5xl mx-auto mb-16">
-                            <div className="relative aspect-[21/9] md:aspect-[2/1] rounded-3xl overflow-hidden shadow-2xl ring-1 ring-black/5">
+                        <div className="max-w-5xl mx-auto mb-20 relative px-4">
+                            <div className="relative aspect-[21/9] md:aspect-[2/1] bg-neutral-100 border-[3px] border-neutral-900 shadow-[12px_12px_0px_0px_rgba(0,0,0,1)]">
                                 <Image
                                     src={post.featured_image}
                                     alt={post.title}
@@ -271,8 +270,8 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
                     )}
 
                     {/* Main Layout */}
-                    <div className="max-w-7xl mx-auto">
-                        <div className="grid grid-cols-1 md:grid-cols-12 gap-12">
+                    <div className="max-w-7xl mx-auto px-4">
+                        <div className="grid grid-cols-1 md:grid-cols-12 gap-16">
 
                             {/* Left Sidebar - Social Share (Sticky) */}
                             <div className="hidden md:block md:col-span-1">
@@ -281,20 +280,21 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
 
                             {/* Main Content */}
                             <div className="md:col-span-8">
-                                <div className="prose prose-lg md:prose-xl prose-neutral max-w-none
-                  prose-headings:font-serif prose-headings:font-bold prose-headings:text-neutral-900
-                  prose-h1:text-5xl prose-h2:text-4xl prose-h3:text-2xl
-                  prose-p:leading-[1.8] prose-p:text-neutral-700 prose-p:mb-8
-                  prose-a:text-primary-600 prose-a:no-underline hover:prose-a:underline hover:prose-a:text-primary-700
-                  prose-img:rounded-3xl prose-img:shadow-2xl prose-img:my-12
-                  prose-li:text-neutral-700 prose-li:mb-2
-                  prose-ul:my-8 prose-ol:my-8
-                  prose-pre:bg-neutral-900 prose-pre:rounded-2xl prose-pre:shadow-xl
-                  prose-blockquote:border-l-4 prose-blockquote:border-l-primary-500 prose-blockquote:bg-primary-50/40 prose-blockquote:py-4 prose-blockquote:px-8 prose-blockquote:rounded-r-2xl prose-blockquote:not-italic prose-blockquote:my-12
-                  prose-table:border prose-table:border-neutral-200 prose-table:rounded-xl prose-table:overflow-hidden
-                  prose-th:bg-neutral-50 prose-th:px-4 prose-th:py-3 prose-th:text-neutral-900
-                  prose-td:px-4 prose-td:py-3 prose-td:border-t prose-td:border-neutral-100
-                ">
+                                <div className="prose prose-neutral max-w-none
+                                  prose-headings:font-black prose-headings:text-neutral-900 prose-headings:uppercase prose-headings:tracking-tighter
+                                  prose-h1:text-6xl prose-h2:text-4xl prose-h2:border-b-[3px] prose-h2:border-neutral-900 prose-h2:pb-4 prose-h2:mb-10
+                                  prose-h3:text-2xl prose-h3:bg-neutral-900 prose-h3:text-white prose-h3:inline-block prose-h3:px-4 prose-h3:py-1
+                                  prose-p:leading-[1.7] prose-p:text-neutral-800 prose-p:mb-8 prose-p:font-medium prose-p:text-lg
+                                  prose-a:text-neutral-900 prose-a:font-black prose-a:underline prose-a:decoration-primary-400 prose-a:decoration-[3px] hover:prose-a:bg-primary-400
+                                  prose-img:border-[3px] prose-img:border-neutral-900 prose-img:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] prose-img:my-16
+                                  prose-li:text-neutral-800 prose-li:mb-2 prose-li:font-bold
+                                  prose-ul:list-square
+                                  prose-pre:bg-neutral-900 prose-pre:border-[3px] prose-pre:border-neutral-900 prose-pre:shadow-[6px_6px_0px_0px_rgba(255,255,255,0.1)]
+                                  prose-blockquote:border-l-[6px] prose-blockquote:border-l-neutral-900 prose-blockquote:bg-neutral-50 prose-blockquote:py-8 prose-blockquote:px-10 prose-blockquote:not-italic prose-blockquote:font-black prose-blockquote:text-xl prose-blockquote:my-16
+                                  prose-table:border-[3px] prose-table:border-neutral-900
+                                  prose-th:bg-neutral-900 prose-th:text-white prose-th:px-6 prose-th:py-4 prose-th:font-black prose-th:uppercase prose-th:text-xs
+                                  prose-td:px-6 prose-td:py-4 prose-td:border-[2px] prose-td:border-neutral-900 prose-td:font-bold
+                                ">
                                     <ReactMarkdown
                                         remarkPlugins={[remarkGfm, remarkBreaks]}
                                         components={{
@@ -331,11 +331,15 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
                             {/* Sidebar with TOC (Right) */}
                             <div className="hidden lg:block lg:col-span-3">
                                 <div className="sticky top-24">
-                                    <TableOfContents headings={headings} />
+                                    <div className="brutalist-card p-6 mb-8">
+                                        <h4 className="text-[10px] font-black uppercase tracking-widest text-neutral-400 mb-6">Archive Navigation</h4>
+                                        <TableOfContents headings={headings} />
+                                    </div>
 
                                     {/* Optional: Add Ad space here */}
-                                    <div className="mt-8 p-6 bg-neutral-50 rounded-xl text-center text-sm text-neutral-400 border border-neutral-100">
-                                        <p>Ad Space</p>
+                                    <div className="p-8 bg-neutral-900 text-white border-[3px] border-neutral-900 shadow-[6px_6px_0px_0px_rgba(0,0,0,0.2)]">
+                                        <div className="text-[10px] font-black uppercase tracking-widest text-neutral-500 mb-4">Space Module</div>
+                                        <p className="text-xs font-bold leading-relaxed opacity-50 italic">Strategic placement for conversion assets or promotional intelligence.</p>
                                     </div>
                                 </div>
                             </div>
@@ -346,10 +350,13 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
 
             {/* Related Posts */}
             {relatedPosts.length > 0 && (
-                <section className="py-16 bg-neutral-50/50">
+                <section className="py-24 bg-white border-t-[4px] border-neutral-900">
                     <div className="container-custom">
-                        <h2 className="text-3xl font-bold font-serif text-neutral-900 mb-8">Related Reviews</h2>
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                        <div className="flex items-center gap-4 mb-12">
+                            <h2 className="text-4xl font-black uppercase tracking-tighter">Related Archive</h2>
+                            <div className="h-[3px] flex-1 bg-neutral-900" />
+                        </div>
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
                             {relatedPosts.map((relatedPost) => (
                                 <PostCard key={relatedPost.id} post={relatedPost} />
                             ))}
