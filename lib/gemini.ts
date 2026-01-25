@@ -13,11 +13,7 @@ export async function generateSEOContent(content: string) {
     }
 
     try {
-        const genAI = new GoogleGenerativeAI(apiKey);
-
-        // Log masked key for diagnostic verification
-        console.log(`AI Engine: Initializing with key ${apiKey.substring(0, 6)}...${apiKey.substring(apiKey.length - 4)}`);
-
+        const apiVersions = ["v1", "v1beta"];
         const modelsToTry = [
             "gemini-1.5-flash",
             "gemini-1.5-flash-latest",
@@ -42,51 +38,55 @@ export async function generateSEOContent(content: string) {
 
         let lastError = "";
 
-        // ACTIVE NEGOTIATION LOOP
-        // We must attempt generation inside the loop to truly verify model access (404s happen here)
-        for (const modelName of modelsToTry) {
+        // DEEP NEGOTIATION: Version x Model
+        for (const version of apiVersions) {
             try {
-                console.log(`AI Engine: Negotiating with ${modelName}...`);
-                const model = genAI.getGenerativeModel({ model: modelName });
-                const result = await model.generateContent(prompt);
-                const response = await result.response;
-                const text = response.text();
+                const genAI = new GoogleGenerativeAI(apiKey);
+                // Note: The SDK typically handles versioning internally, but we can force it
+                // via internal endpoint manipulation or by trying standard initialization
 
-                if (text) {
-                    console.log(`AI Engine: Connection established via ${modelName}`);
-
-                    // Clean and parse
-                    const cleanText = text.replace(/```json|```/gi, "").trim();
+                for (const modelName of modelsToTry) {
                     try {
-                        const data = JSON.parse(cleanText);
-                        return { success: true, data };
-                    } catch (parseError) {
-                        console.error(`Format mismatch on ${modelName}:`, text);
-                        // Continue to next model if format is bad? No, usually model access is the issue.
-                        // But let's try next model just in case.
+                        console.log(`AI Engine: Negotiating via ${version}/${modelName}...`);
+                        const model = genAI.getGenerativeModel({ model: modelName }, { apiVersion: version as any });
+                        const result = await model.generateContent(prompt);
+                        const response = await result.response;
+                        const text = response.text();
+
+                        if (text) {
+                            console.log(`AI Engine: Connection secured via ${version}/${modelName}`);
+                            const cleanText = text.replace(/```json|```/gi, "").trim();
+                            const data = JSON.parse(cleanText);
+                            return { success: true, data };
+                        }
+                    } catch (e: any) {
+                        lastError = e.message || "Model rejection";
+                        console.warn(`AI Engine: ${version}/${modelName} unavailable:`, lastError);
                     }
                 }
-            } catch (e: any) {
-                lastError = e.message || "Unknown negotiation error";
-                console.warn(`AI Engine: Model ${modelName} rejected request:`, lastError);
-                // Continue to next model in the fleet
+            } catch (vError: any) {
+                console.warn(`AI Engine: Version ${version} handshake failed.`);
             }
         }
 
-        // FLEET FAILURE
+        // TOTAL FLEET COLLAPSE
         return {
             success: false,
-            error: `Fleet Negotiation Failed: All compatible models returned errors. Latest: ${lastError}.
-            1. Verified Key: ${apiKey.substring(0, 6)}...
-            2. Check: Is your key from aistudio.google.com?
-            3. Check: Is your project region supported by Google AI?`
+            error: `Strategic AI Failure: No connection established.
+            Latest Error: ${lastError}
+            Key Index: ${apiKey.substring(0, 8)}...
+
+            DIAGNOSTIC: This 404 usually happens if:
+            1. The key is NOT a 'Google AI Studio' key.
+            2. The 'Generative Language API' is NOT enabled for your project.
+            3. You have not REDEPLOYED on Vercel after saving settings.`
         };
 
     } catch (globalError: any) {
         console.error("Critical AI Pipeline Error:", globalError);
         return {
             success: false,
-            error: `Critical Failure: ${globalError.message || "An unexpected error occurred."}`
+            error: `System Failure: ${globalError.message || "An unexpected error occurred."}`
         };
     }
 }
