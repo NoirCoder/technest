@@ -81,8 +81,9 @@ export default function MediaPage() {
             if (!error && data) {
                 setMedia([data, ...media]);
             }
-        } catch (error) {
-            alert('Upload failed. Ensure "media" table and "images" storage exist.');
+        } catch (error: any) {
+            console.error('Upload process error:', error);
+            alert(`Upload failed: ${error.message || 'Unknown error'}. Please ensure the "images" bucket and "media" table exist in Supabase.`);
         } finally {
             setIsUploading(false);
             if (fileInputRef.current) fileInputRef.current.value = '';

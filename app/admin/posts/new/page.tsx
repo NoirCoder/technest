@@ -62,8 +62,9 @@ export default function NewPostPage() {
         try {
             const url = await uploadImage(file);
             setFormData(prev => ({ ...prev, featured_image: url }));
-        } catch (error) {
-            alert('Hero image upload failed.');
+        } catch (error: any) {
+            console.error('Hero upload error:', error);
+            alert(`Hero image upload failed: ${error.message || 'Unknown error'}`);
         } finally {
             setIsUploadingHero(false);
         }
