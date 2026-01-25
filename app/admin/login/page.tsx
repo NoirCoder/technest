@@ -34,49 +34,51 @@ export default function AdminLoginPage() {
     };
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-neutral-50 to-primary-50/30 flex items-center justify-center p-4">
-            <div className="w-full max-w-md">
-                <div className="card p-8">
-                    <div className="text-center mb-8">
-                        <h1 className="text-3xl font-bold font-serif text-neutral-900 mb-2">
-                            Tech<span className="text-primary-600">Nest</span>
+        <div className="min-h-screen bg-white relative overflow-hidden flex items-center justify-center p-6">
+            {/* Background Grid Protocol */}
+            <div className="absolute inset-0 z-0 opacity-[0.03]" style={{ backgroundImage: 'radial-gradient(#000 1.5px, transparent 0)', backgroundSize: '32px 32px' }}></div>
+
+            <div className="w-full max-w-md relative z-10">
+                <div className="brutalist-card bg-white p-12 border-neutral-900 shadow-[16px_16px_0px_0px_rgba(0,0,0,1)]">
+                    <div className="text-center mb-12">
+                        <div className="inline-block px-4 py-1.5 bg-neutral-900 text-white text-[10px] font-black uppercase tracking-[0.4em] mb-8">
+                            SECURE ACCESS PROTOCOL
+                        </div>
+                        <h1 className="text-5xl font-black tracking-tighter text-neutral-900 uppercase leading-none">
+                            Tech<span className="text-primary-400">Nest</span>
                         </h1>
-                        <p className="text-neutral-600">Admin Login</p>
+                        <p className="text-[11px] font-black text-neutral-400 uppercase tracking-[0.4em] mt-4 italic">Management Studio 2.0</p>
                     </div>
 
-                    <form onSubmit={handleLogin} className="space-y-6">
+                    <form onSubmit={handleLogin} className="space-y-8">
                         {error && (
-                            <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm">
-                                {error}
+                            <div className="bg-red-400 border-[3px] border-neutral-900 text-neutral-900 px-6 py-4 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] text-[10px] font-black uppercase tracking-widest leading-relaxed">
+                                ERROR: {error}
                             </div>
                         )}
 
-                        <div>
-                            <label htmlFor="email" className="block text-sm font-medium text-neutral-700 mb-2">
-                                Email
-                            </label>
+                        <div className="space-y-3">
+                            <label htmlFor="email" className="block text-[10px] font-black uppercase tracking-widest text-neutral-400">Tactical Identifier (Email)</label>
                             <input
                                 id="email"
                                 type="email"
                                 value={email}
                                 onChange={(e) => setEmail(e.target.value)}
                                 required
-                                className="w-full px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                                placeholder="admin@technest.com"
+                                className="brutalist-input h-14"
+                                placeholder="PROTOCOLID@NEST.CO"
                             />
                         </div>
 
-                        <div>
-                            <label htmlFor="password" className="block text-sm font-medium text-neutral-700 mb-2">
-                                Password
-                            </label>
+                        <div className="space-y-3">
+                            <label htmlFor="password" title="Access Key" className="block text-[10px] font-black uppercase tracking-widest text-neutral-400">Authorization Key</label>
                             <input
                                 id="password"
                                 type="password"
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}
                                 required
-                                className="w-full px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                                className="brutalist-input h-14"
                                 placeholder="••••••••"
                             />
                         </div>
@@ -84,11 +86,16 @@ export default function AdminLoginPage() {
                         <button
                             type="submit"
                             disabled={loading}
-                            className="w-full btn-primary disabled:opacity-50 disabled:cursor-not-allowed"
+                            className="brutalist-button-primary h-16 w-full shadow-[8px_8px_0px_0px_rgba(0,0,0,0.1)]"
                         >
-                            {loading ? 'Signing in...' : 'Sign In'}
+                            {loading ? 'SYNCHRONIZING...' : 'INITIALIZE SESSION'}
                         </button>
                     </form>
+
+                    <div className="mt-12 pt-8 border-t-[3px] border-neutral-900 flex justify-between items-center text-[9px] font-black text-neutral-300 uppercase tracking-widest">
+                        <span>SYS_STATUS: READY</span>
+                        <span>v2.0.4.6_STABLE</span>
+                    </div>
                 </div>
             </div>
         </div>

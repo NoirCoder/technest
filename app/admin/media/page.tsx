@@ -106,50 +106,50 @@ export default function MediaPage() {
 
     if (loading) {
         return (
-            <div className="flex flex-col items-center justify-center h-[50vh] space-y-4">
-                <Loader2 className="w-8 h-8 animate-spin text-neutral-200" />
-                <p className="text-[10px] font-bold text-neutral-400 uppercase tracking-widest animate-pulse">Scanning Vault...</p>
+            <div className="flex flex-col items-center justify-center h-[50vh] space-y-6">
+                <div className="w-12 h-12 border-[4px] border-neutral-100 border-t-neutral-900 rounded-none animate-spin shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]"></div>
+                <p className="text-neutral-400 font-black text-[10px] uppercase tracking-[0.4em] animate-pulse">Synchronizing Asset Vault...</p>
             </div>
         );
     }
 
     return (
-        <div className="space-y-12">
+        <div className="space-y-16">
             {/* Header */}
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-8 border-b border-neutral-100 pb-10">
+            <div className="flex flex-col md:flex-row md:items-end justify-between gap-12 border-b-[4px] border-neutral-900 pb-16">
                 <div>
-                    <div className="flex items-center gap-2 mb-3">
-                        <ImageIcon className="w-4 h-4 text-neutral-400" />
-                        <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-neutral-400">Asset Management</span>
+                    <div className="flex items-center gap-3 mb-6">
+                        <ImageIcon className="w-4 h-4 text-neutral-900" />
+                        <span className="text-[11px] font-black uppercase tracking-[0.4em] text-neutral-400">Media Asset Management</span>
                     </div>
-                    <h1 className="text-4xl font-bold tracking-tight text-neutral-900 mb-2">Media Vault</h1>
-                    <p className="text-neutral-500 font-medium">Coordinate your visual assets and optimize for high-impact content.</p>
+                    <h1 className="text-6xl font-black tracking-tighter text-neutral-900 uppercase leading-none mb-4">The Vault</h1>
+                    <p className="text-lg font-bold text-neutral-400 uppercase tracking-widest">Coordinate visual intelligence protocols.</p>
                 </div>
                 <button
                     onClick={() => fileInputRef.current?.click()}
                     disabled={isUploading}
-                    className="h-12 px-8 rounded-xl bg-[#09090B] text-white hover:bg-neutral-800 font-bold text-sm transition-all flex items-center gap-2 shadow-xl shadow-neutral-100 disabled:opacity-50"
+                    className="brutalist-button-primary h-16 px-10"
                 >
-                    {isUploading ? <Loader2 className="w-4 h-4 animate-spin" /> : <UploadCloud className="w-4 h-4" />}
-                    Batch Upload
+                    {isUploading ? <Loader2 className="w-5 h-5 animate-spin mr-3" /> : <UploadCloud className="w-5 h-5 mr-3" />}
+                    BATCH UPLOAD
                 </button>
                 <input type="file" ref={fileInputRef} onChange={handleUpload} className="hidden" accept="image/*" />
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
-                <div className="lg:col-span-8 space-y-8">
-                    <div className="relative group">
-                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4.5 h-4.5 text-neutral-300 group-focus-within:text-neutral-900 transition-colors" />
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-16">
+                <div className="lg:col-span-8 space-y-12">
+                    <div className="relative group brutalist-card border-neutral-900">
+                        <Search className="absolute left-6 top-1/2 -translate-y-1/2 w-6 h-6 text-neutral-900" />
                         <input
                             type="text"
-                            placeholder="Filter library assets..."
+                            placeholder="FILTER ASSET REGISTRY..."
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
-                            className="w-full pl-12 pr-4 py-4 bg-white rounded-2xl border border-neutral-100 focus:ring-4 focus:ring-neutral-50 transition-all text-sm font-medium outline-none"
+                            className="w-full pl-16 pr-8 py-5 bg-transparent border-none focus:ring-0 text-[11px] font-black uppercase tracking-[0.3em] outline-none placeholder:text-neutral-300"
                         />
                     </div>
 
-                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-6">
                         <AnimatePresence mode="popLayout">
                             {filteredMedia.map((item) => (
                                 <motion.div
@@ -160,8 +160,10 @@ export default function MediaPage() {
                                     key={item.id}
                                     onClick={() => setSelectedItem(item)}
                                     className={cn(
-                                        "group aspect-square rounded-2xl overflow-hidden bg-neutral-50 border-2 transition-all cursor-pointer relative",
-                                        selectedItem?.id === item.id ? "border-primary-500 ring-4 ring-primary-50 shadow-xl scale-[1.02]" : "border-transparent hover:border-neutral-200"
+                                        "group aspect-square border-[3px] transition-all cursor-pointer relative overflow-hidden",
+                                        selectedItem?.id === item.id
+                                            ? "border-neutral-900 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] scale-[1.02] z-10"
+                                            : "border-neutral-200 grayscale-0 hover:border-neutral-900 hover:grayscale-0"
                                     )}
                                 >
                                     <Image
@@ -171,25 +173,25 @@ export default function MediaPage() {
                                         sizes="(max-width: 768px) 50vw, 25vw"
                                         className="object-cover transition-transform duration-700 group-hover:scale-110"
                                     />
-                                    <div className="absolute inset-x-0 bottom-0 p-3 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity">
-                                        <p className="text-[9px] font-bold text-white truncate">{item.filename}</p>
+                                    <div className="absolute inset-x-0 bottom-0 p-3 bg-neutral-900 text-white translate-y-full group-hover:translate-y-0 transition-transform duration-300">
+                                        <p className="text-[9px] font-black uppercase tracking-widest truncate">{item.filename}</p>
                                     </div>
                                 </motion.div>
                             ))}
                         </AnimatePresence>
 
                         {filteredMedia.length === 0 && (
-                            <div className="col-span-full py-40 text-center bg-white rounded-[3rem] border-2 border-dashed border-neutral-100">
-                                <ImageIcon className="w-12 h-12 text-neutral-100 mx-auto mb-4" />
-                                <h3 className="text-xl font-bold text-neutral-900 mb-2 font-serif italic">Vault is Empty</h3>
-                                <p className="text-neutral-400 font-medium max-w-xs mx-auto">Either your search is too specific or the archive is awaiting new uploads.</p>
+                            <div className="col-span-full py-40 text-center brutalist-card border-dashed border-neutral-900 bg-neutral-50 grayscale opacity-40">
+                                <ImageIcon className="w-16 h-16 text-neutral-900 mx-auto mb-8 rotate-6 bg-white p-3 border-[3px] border-neutral-900 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]" />
+                                <h3 className="text-2xl font-black text-neutral-900 uppercase tracking-tighter mb-4 italic">The Vault is Void</h3>
+                                <p className="text-[11px] font-black uppercase tracking-[0.4em] text-neutral-400 max-w-sm mx-auto">No assets detected for current query module. Initialize new uploads or reset filters.</p>
                             </div>
                         )}
                     </div>
                 </div>
 
                 {/* Inspector Sidebar */}
-                <div className="lg:col-span-4 sticky top-6">
+                <div className="lg:col-span-4 sticky top-12">
                     <AnimatePresence mode="wait">
                         {selectedItem ? (
                             <motion.div
@@ -197,68 +199,67 @@ export default function MediaPage() {
                                 initial={{ opacity: 0, x: 20 }}
                                 animate={{ opacity: 1, x: 0 }}
                                 exit={{ opacity: 0, x: 20 }}
-                                className="bg-white rounded-[2rem] border border-neutral-100 shadow-sm overflow-hidden flex flex-col"
+                                className="brutalist-card bg-white border-neutral-900 shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] overflow-hidden flex flex-col"
                             >
-                                <div className="aspect-[4/3] relative bg-neutral-100">
+                                <div className="aspect-[4/3] relative bg-neutral-100 border-b-[3px] border-neutral-900">
                                     <Image src={selectedItem.url} alt="Preview" fill className="object-contain" />
                                     <button
                                         onClick={() => setSelectedItem(null)}
-                                        className="absolute top-4 right-4 p-2 bg-white/80 backdrop-blur rounded-full hover:bg-white transition-colors border border-black/5 shadow-sm"
+                                        className="absolute top-5 right-5 p-2.5 bg-white border-[2px] border-neutral-900 text-neutral-900 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all"
                                     >
-                                        <X className="w-4 h-4" />
+                                        <X className="w-5 h-5 font-black" />
                                     </button>
                                 </div>
-                                <div className="p-8 space-y-8">
-                                    <div className="space-y-4">
+                                <div className="p-10 space-y-10">
+                                    <div className="space-y-6">
                                         <div className="flex justify-between items-start">
                                             <div className="min-w-0">
-                                                <h3 className="text-lg font-bold text-neutral-900 truncate mb-1">{selectedItem.filename}</h3>
-                                                <p className="text-[10px] font-bold text-neutral-300 uppercase tracking-widest">
+                                                <h3 className="text-xl font-black text-neutral-900 truncate mb-2 uppercase tracking-tighter">{selectedItem.filename}</h3>
+                                                <div className="flex items-center gap-3 text-[10px] font-black text-neutral-400 uppercase tracking-widest bg-neutral-50 px-3 py-1 border-[1.5px] border-neutral-200">
                                                     {(selectedItem.size / 1024).toFixed(1)} KB • {new Date(selectedItem.created_at).toLocaleDateString()}
-                                                </p>
+                                                </div>
                                             </div>
                                             <button
                                                 onClick={() => {
                                                     navigator.clipboard.writeText(selectedItem.url);
-                                                    // Trigger fake toast state if needed
                                                 }}
-                                                className="p-2.5 bg-neutral-50 rounded-xl text-neutral-400 hover:text-neutral-900 border border-neutral-100 hover:shadow-sm transition-all"
+                                                className="p-3 bg-white border-[2px] border-neutral-900 text-neutral-900 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all"
                                             >
-                                                <Copy className="w-4 h-4" />
+                                                <Copy className="w-5 h-5" />
                                             </button>
                                         </div>
 
-                                        <div className="space-y-2">
-                                            <label className="text-[10px] font-bold uppercase tracking-widest text-neutral-400">SEO ALT TEXT</label>
+                                        <div className="space-y-3">
+                                            <label className="text-[10px] font-black uppercase tracking-widest text-neutral-400">Tactical Alt Text</label>
                                             <input
                                                 type="text"
                                                 defaultValue={selectedItem.alt_text}
-                                                className="w-full px-4 py-3 bg-neutral-50 rounded-xl border border-transparent focus:bg-white focus:border-neutral-200 transition-all text-xs font-bold text-neutral-900 outline-none shadow-inner"
+                                                className="brutalist-input h-14"
                                             />
                                         </div>
                                     </div>
 
-                                    <div className="flex gap-3">
-                                        <button className="flex-1 h-12 rounded-xl bg-[#09090B] text-white hover:bg-neutral-800 font-bold text-xs transition-all shadow-xl shadow-neutral-100 flex items-center justify-center gap-2">
-                                            <Check className="w-4 h-4" />
-                                            Update Details
+                                    <div className="flex gap-4">
+                                        <button className="brutalist-button-primary flex-1 h-14 shadow-[4px_4px_0px_0px_rgba(0,0,0,0.1)]">
+                                            <Check className="w-5 h-5 mr-3" />
+                                            SYNC INTEL
                                         </button>
                                         <button
                                             onClick={() => handleDelete(selectedItem.id)}
-                                            className="w-12 h-12 flex items-center justify-center rounded-xl bg-red-50 text-red-400 hover:bg-red-500 hover:text-white transition-all border border-red-100"
+                                            className="brutalist-button px-4 bg-red-400 border-neutral-900"
                                         >
-                                            <Trash2 className="w-4.5 h-4.5" />
+                                            <Trash2 className="w-5 h-5" />
                                         </button>
                                     </div>
                                 </div>
                             </motion.div>
                         ) : (
-                            <div className="bg-neutral-50 rounded-[2rem] border-2 border-dashed border-neutral-200 p-12 text-center text-neutral-400 h-[600px] flex flex-col justify-center items-center">
-                                <div className="p-4 bg-white rounded-2xl shadow-soft mb-6">
-                                    <ImageIcon className="w-8 h-8 text-neutral-200" />
+                            <div className="brutalist-card bg-neutral-50 border-dashed border-neutral-900 p-12 text-center text-neutral-400 min-h-[500px] flex flex-col justify-center items-center grayscale opacity-40">
+                                <div className="w-16 h-16 bg-white border-[3px] border-neutral-900 flex items-center justify-center text-neutral-900 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] mb-10">
+                                    <ImageIcon className="w-8 h-8" />
                                 </div>
-                                <h3 className="font-bold text-neutral-900 text-sm mb-2 italic">No Selection</h3>
-                                <p className="text-[10px] font-bold uppercase tracking-widest max-w-[200px]">Choose an asset to inspect and broadcast its metadata.</p>
+                                <h3 className="text-xl font-black text-neutral-900 mb-4 uppercase tracking-tighter italic">No Selection</h3>
+                                <p className="text-[11px] font-black uppercase tracking-[0.4em] max-w-[240px] leading-relaxed">Select an asset from the vault to inspect and revise metadata.</p>
                             </div>
                         )}
                     </AnimatePresence>

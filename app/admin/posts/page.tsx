@@ -81,48 +81,48 @@ export default function PostsPage() {
 
     if (loading) {
         return (
-            <div className="flex flex-col items-center justify-center h-[50vh] space-y-4">
-                <div className="w-10 h-10 border-4 border-neutral-100 border-t-neutral-900 rounded-full animate-spin"></div>
-                <p className="text-neutral-400 font-bold text-xs uppercase tracking-widest animate-pulse">Scanning Library...</p>
+            <div className="flex flex-col items-center justify-center h-[50vh] space-y-6">
+                <div className="w-12 h-12 border-[4px] border-neutral-100 border-t-neutral-900 rounded-none animate-spin shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]"></div>
+                <p className="text-neutral-400 font-black text-[10px] uppercase tracking-[0.4em] animate-pulse">Scanning Intel Library...</p>
             </div>
         );
     }
 
     return (
-        <div className="space-y-10">
+        <div className="space-y-16">
             {/* Header */}
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-8">
+            <div className="flex flex-col md:flex-row md:items-end justify-between gap-12 border-b-[4px] border-neutral-900 pb-16">
                 <div>
-                    <div className="flex items-center gap-2 mb-3">
-                        <Archive className="w-4 h-4 text-neutral-400" />
-                        <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-neutral-400">Content Index</span>
+                    <div className="flex items-center gap-3 mb-6">
+                        <Archive className="w-4 h-4 text-neutral-900" />
+                        <span className="text-[11px] font-black uppercase tracking-[0.4em] text-neutral-400">Tactical Content Repository</span>
                     </div>
-                    <h1 className="text-4xl font-bold tracking-tight text-neutral-900 mb-2">Publications</h1>
-                    <p className="text-neutral-500 font-medium">Coordinate and scale your editorial repository.</p>
+                    <h1 className="text-6xl font-black tracking-tighter text-neutral-900 uppercase leading-none mb-4">Publications</h1>
+                    <p className="text-lg font-bold text-neutral-400 uppercase tracking-widest">Scale your editorial intelligence.</p>
                 </div>
-                <Link href="/admin/posts/new" className="h-12 px-8 rounded-xl bg-[#09090B] text-white hover:bg-neutral-800 font-bold text-sm transition-all flex items-center gap-2 shadow-xl shadow-neutral-200">
-                    <Plus className="w-4 h-4" />
-                    New Publication
+                <Link href="/admin/posts/new" className="brutalist-button-primary h-16 px-10">
+                    <Plus className="w-5 h-5 mr-3" />
+                    <span className="text-[10px] font-black">INITIALIZE NEW ARCHIVE</span>
                 </Link>
             </div>
 
             {/* Controls Bar */}
-            <div className="bg-white p-2 rounded-2xl border border-neutral-100 shadow-sm flex flex-col lg:flex-row items-center gap-4">
+            <div className="bg-white border-[3px] border-neutral-900 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] p-3 flex flex-col lg:flex-row items-center gap-6">
                 {/* Tabs */}
-                <div className="flex items-center bg-neutral-50 p-1 rounded-xl w-full lg:w-auto">
+                <div className="flex items-center bg-neutral-100 border-[2.5px] border-neutral-900 p-1 w-full lg:w-auto">
                     {[
-                        { id: 'all', label: 'All Entries' },
-                        { id: 'published', label: 'Published' },
-                        { id: 'draft', label: 'Drafts' },
+                        { id: 'all', label: 'ALL ARCHIVES' },
+                        { id: 'published', label: 'STABLE' },
+                        { id: 'draft', label: 'INCUBATING' },
                     ].map((tab) => (
                         <button
                             key={tab.id}
                             onClick={() => setActiveTab(tab.id as any)}
                             className={cn(
-                                "flex-1 lg:flex-none px-6 py-2 rounded-lg text-xs font-bold transition-all",
+                                "flex-1 lg:flex-none px-6 py-2 text-[10px] font-black transition-all",
                                 activeTab === tab.id
-                                    ? "bg-white text-neutral-900 shadow-sm"
-                                    : "text-neutral-400 hover:text-neutral-600"
+                                    ? "bg-neutral-900 text-white shadow-[2px_2px_0px_0px_rgba(255,255,255,0.2)]"
+                                    : "text-neutral-400 hover:text-neutral-900"
                             )}
                         >
                             {tab.label}
@@ -130,39 +130,37 @@ export default function PostsPage() {
                     ))}
                 </div>
 
-                <div className="h-8 w-px bg-neutral-100 hidden lg:block" />
-
                 {/* Search */}
-                <div className="relative flex-1 w-full">
-                    <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-300" />
+                <div className="relative flex-1 w-full group">
+                    <Search className="absolute left-6 top-1/2 -translate-y-1/2 w-5 h-5 text-neutral-400 group-hover:text-neutral-900 transition-colors" />
                     <input
                         type="text"
-                        placeholder="Filter by title or keywords..."
+                        placeholder="FILTER BY INTEL HEADLINE OR KEYWORDS..."
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
-                        className="w-full pl-12 pr-4 py-3 bg-transparent border-none focus:ring-0 text-sm font-medium placeholder:text-neutral-300"
+                        className="w-full pl-16 pr-6 py-4 bg-neutral-50 border-[2.5px] border-neutral-900 font-black text-[11px] uppercase tracking-widest placeholder:text-neutral-300 focus:bg-white transition-all outline-none"
                     />
                 </div>
 
-                <div className="h-8 w-px bg-neutral-100 hidden lg:block" />
-
                 {/* View Switcher */}
-                <div className="flex items-center gap-2 pr-2 w-full lg:w-auto justify-end">
-                    <button
-                        onClick={() => setViewMode('table')}
-                        className={cn("p-2.5 rounded-xl transition-all", viewMode === 'table' ? "bg-neutral-900 text-white" : "text-neutral-400 hover:bg-neutral-50")}
-                    >
-                        <List className="w-4.5 h-4.5" />
-                    </button>
-                    <button
-                        onClick={() => setViewMode('grid')}
-                        className={cn("p-2.5 rounded-xl transition-all", viewMode === 'grid' ? "bg-neutral-900 text-white" : "text-neutral-400 hover:bg-neutral-50")}
-                    >
-                        <LayoutGrid className="w-4.5 h-4.5" />
-                    </button>
-                    <button className="flex items-center gap-2 px-4 py-2.5 bg-neutral-50 rounded-xl text-neutral-900 font-bold text-xs border border-neutral-100 hover:bg-neutral-100 transition-all">
-                        <Filter className="w-3.5 h-3.5" />
-                        Sort: Latest
+                <div className="flex items-center gap-4 w-full lg:w-auto justify-end">
+                    <div className="flex border-[2px] border-neutral-900">
+                        <button
+                            onClick={() => setViewMode('table')}
+                            className={cn("p-3 transition-all", viewMode === 'table' ? "bg-neutral-900 text-white" : "bg-white text-neutral-400 hover:bg-neutral-50")}
+                        >
+                            <List className="w-5 h-5" />
+                        </button>
+                        <button
+                            onClick={() => setViewMode('grid')}
+                            className={cn("p-3 border-l-[2px] border-neutral-900 transition-all", viewMode === 'grid' ? "bg-neutral-900 text-white" : "bg-white text-neutral-400 hover:bg-neutral-50")}
+                        >
+                            <LayoutGrid className="w-5 h-5" />
+                        </button>
+                    </div>
+                    <button className="h-12 flex items-center gap-3 px-6 bg-neutral-900 text-primary-400 font-black text-[10px] uppercase tracking-widest border-[2.5px] border-neutral-900 shadow-[4px_4px_0px_0px_rgba(0,0,0,0.2)]">
+                        <Filter className="w-4 h-4" />
+                        LATEST
                     </button>
                 </div>
             </div>
@@ -175,75 +173,75 @@ export default function PostsPage() {
                         initial={{ opacity: 0, y: 10 }}
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: -10 }}
-                        className="bg-white border border-neutral-100 rounded-[2rem] overflow-hidden shadow-sm"
+                        className="bg-white border-[3px] border-neutral-900 shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] overflow-hidden"
                     >
                         <div className="overflow-x-auto">
                             <table className="w-full text-left border-collapse">
                                 <thead>
-                                    <tr className="border-b border-neutral-50 bg-neutral-50/30">
-                                        <th className="px-8 py-5 text-[10px] font-bold uppercase tracking-widest text-neutral-400">Publication</th>
-                                        <th className="px-8 py-5 text-[10px] font-bold uppercase tracking-widest text-neutral-400">Taxonomy</th>
-                                        <th className="px-8 py-5 text-[10px] font-bold uppercase tracking-widest text-neutral-400">Status</th>
-                                        <th className="px-8 py-5 text-[10px] font-bold uppercase tracking-widest text-neutral-400">Last Revised</th>
-                                        <th className="px-8 py-5 text-[10px] font-bold uppercase tracking-widest text-neutral-400 text-right">Actions</th>
+                                    <tr className="bg-neutral-900 border-b-[3px] border-neutral-900">
+                                        <th className="px-10 py-6 text-[11px] font-black uppercase tracking-[0.3em] text-neutral-500">Archive/Intel</th>
+                                        <th className="px-10 py-6 text-[11px] font-black uppercase tracking-[0.3em] text-neutral-500">Classification</th>
+                                        <th className="px-10 py-6 text-[11px] font-black uppercase tracking-[0.3em] text-neutral-500">Protocol</th>
+                                        <th className="px-10 py-6 text-[11px] font-black uppercase tracking-[0.3em] text-neutral-500">Record Date</th>
+                                        <th className="px-10 py-6 text-[11px] font-black uppercase tracking-[0.3em] text-neutral-500 text-right">Commands</th>
                                     </tr>
                                 </thead>
-                                <tbody className="divide-y divide-neutral-50">
+                                <tbody className="divide-y-[2px] divide-neutral-900">
                                     {filteredPosts.map((post) => (
-                                        <tr key={post.id} className="group hover:bg-neutral-50/50 transition-all">
-                                            <td className="px-8 py-6">
-                                                <div className="flex items-center gap-4">
-                                                    <div className="w-10 h-10 rounded-xl bg-neutral-50 flex items-center justify-center text-neutral-400 group-hover:bg-white group-hover:shadow-sm transition-all shrink-0">
-                                                        <FileText className="w-4.5 h-4.5" />
+                                        <tr key={post.id} className="group hover:bg-neutral-50 transition-all">
+                                            <td className="px-10 py-8">
+                                                <div className="flex items-center gap-6">
+                                                    <div className="w-14 h-14 bg-white border-[2px] border-neutral-900 flex items-center justify-center text-neutral-900 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] group-hover:shadow-none translate-x-[-2px] group-hover:translate-x-0 group-hover:translate-y-0 translate-y-[-2px] transition-all shrink-0">
+                                                        <FileText className="w-6 h-6" />
                                                     </div>
                                                     <div className="min-w-0">
-                                                        <h4 className="font-bold text-neutral-900 group-hover:text-primary-700 transition-colors truncate max-w-[300px]">{post.title}</h4>
-                                                        <p className="text-[10px] font-mono text-neutral-300 truncate">/blog/{post.slug}</p>
+                                                        <h4 className="text-lg font-black text-neutral-900 uppercase tracking-tighter mb-2 group-hover:text-primary-400 transition-colors truncate max-w-[400px]">{post.title}</h4>
+                                                        <p className="text-[10px] font-black text-neutral-400 uppercase tracking-widest truncate">ARCHIVE://{post.slug}</p>
                                                     </div>
                                                 </div>
                                             </td>
-                                            <td className="px-8 py-6">
-                                                <div className="flex flex-wrap gap-1.5">
+                                            <td className="px-10 py-8">
+                                                <div className="flex flex-wrap gap-2">
                                                     {post.categories.map(cat => (
-                                                        <span key={cat.id} className="text-[9px] font-bold px-2 py-0.5 bg-neutral-100 text-neutral-500 rounded-md">
+                                                        <span key={cat.id} className="text-[9px] font-black px-3 py-1 bg-neutral-900 text-white border border-neutral-900 shadow-[2px_2px_0px_0px_rgba(0,0,0,0.2)] uppercase tracking-widest">
                                                             {cat.name}
                                                         </span>
                                                     ))}
                                                 </div>
                                             </td>
-                                            <td className="px-8 py-6">
+                                            <td className="px-10 py-8">
                                                 <div className={cn(
-                                                    "inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[9px] font-bold uppercase tracking-widest border",
-                                                    post.published ? "bg-green-50 text-green-700 border-green-100" : "bg-neutral-50 text-neutral-400 border-neutral-100"
+                                                    "inline-flex items-center gap-2 px-4 py-1.5 border-[2px] text-[10px] font-black uppercase tracking-[0.2em] shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]",
+                                                    post.published ? "bg-primary-400 border-neutral-900 text-neutral-900" : "bg-white border-neutral-900 text-neutral-400 grayscale shadow-none"
                                                 )}>
-                                                    <div className={cn("w-1 h-1 rounded-full", post.published ? "bg-green-600 animate-pulse" : "bg-neutral-300")} />
-                                                    {post.published ? 'Stable' : 'Draft'}
+                                                    <div className={cn("w-2 h-2", post.published ? "bg-neutral-900 animate-pulse" : "bg-neutral-200")} />
+                                                    {post.published ? 'STABLE' : 'DRAFT'}
                                                 </div>
                                             </td>
-                                            <td className="px-8 py-6">
-                                                <p className="text-xs font-bold text-neutral-600">{formatDate(post.updated_at)}</p>
-                                                <p className="text-[10px] font-medium text-neutral-400 uppercase tracking-tighter">via Editor</p>
+                                            <td className="px-10 py-8">
+                                                <p className="text-[11px] font-black text-neutral-900">{formatDate(post.updated_at).toUpperCase()}</p>
+                                                <p className="text-[9px] font-black text-neutral-400 uppercase tracking-widest mt-1">INTEL HUB 2.0</p>
                                             </td>
-                                            <td className="px-8 py-6 text-right">
-                                                <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                                            <td className="px-10 py-8 text-right">
+                                                <div className="flex items-center justify-end gap-3 translate-x-4 opacity-0 group-hover:opacity-100 group-hover:translate-x-0 transition-all">
                                                     <Link
                                                         href={`/blog/${post.slug}`}
                                                         target="_blank"
-                                                        className="p-2.5 rounded-xl bg-white border border-neutral-100 text-neutral-400 hover:text-primary-600 hover:border-primary-100 transition-all shadow-sm"
+                                                        className="p-3 bg-white border-[2px] border-neutral-900 text-neutral-900 shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-[1.5px] hover:translate-y-[1.5px] transition-all"
                                                     >
-                                                        <ExternalLink className="w-4 h-4" />
+                                                        <ExternalLink className="w-4.5 h-4.5" />
                                                     </Link>
                                                     <Link
                                                         href={`/admin/posts/edit/${post.id}`}
-                                                        className="p-2.5 rounded-xl bg-white border border-neutral-100 text-neutral-400 hover:text-primary-600 hover:border-primary-100 transition-all shadow-sm"
+                                                        className="p-3 bg-white border-[2px] border-neutral-900 text-neutral-900 shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-[1.5px] hover:translate-y-[1.5px] transition-all"
                                                     >
-                                                        <Edit2 className="w-4 h-4" />
+                                                        <Edit2 className="w-4.5 h-4.5" />
                                                     </Link>
                                                     <button
                                                         onClick={() => handleDelete(post.id)}
-                                                        className="p-2.5 rounded-xl bg-white border border-neutral-100 text-neutral-400 hover:text-red-600 hover:border-red-100 transition-all shadow-sm"
+                                                        className="p-3 bg-red-400 border-[2px] border-neutral-900 text-neutral-900 shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-[1.5px] hover:translate-y-[1.5px] transition-all"
                                                     >
-                                                        <Trash2 className="w-4 h-4" />
+                                                        <Trash2 className="w-4.5 h-4.5" />
                                                     </button>
                                                 </div>
                                             </td>
@@ -259,43 +257,46 @@ export default function PostsPage() {
                         initial={{ opacity: 0, y: 10 }}
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: -10 }}
-                        className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+                        className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10"
                     >
                         {filteredPosts.map((post) => (
-                            <div key={post.id} className="group bg-white p-6 rounded-[2rem] border border-neutral-100 hover:border-primary-100 hover:shadow-xl hover:shadow-primary-50 transition-all duration-500 relative flex flex-col justify-between h-[280px]">
+                            <div key={post.id} className="group brutalist-card bg-white p-10 flex flex-col justify-between h-[360px] border-neutral-900">
                                 <div>
-                                    <div className="flex justify-between items-start mb-6">
-                                        <div className="w-12 h-12 bg-neutral-50 rounded-2xl flex items-center justify-center text-neutral-400 group-hover:bg-primary-50 group-hover:text-primary-600 transition-all">
-                                            <FileText className="w-5 h-5" />
+                                    <div className="flex justify-between items-start mb-8">
+                                        <div className="w-14 h-14 bg-neutral-900 border-[2px] border-neutral-900 flex items-center justify-center text-primary-400 shadow-[4px_4px_0px_0px_rgba(0,0,0,0.2)] group-hover:rotate-6 transition-all">
+                                            <FileText className="w-6 h-6" />
                                         </div>
                                         <div className={cn(
-                                            "px-3 py-1 rounded-full text-[8px] font-bold uppercase tracking-widest border",
-                                            post.published ? "bg-green-50 text-green-700 border-green-100" : "bg-neutral-50 text-neutral-400 border-neutral-100"
+                                            "px-4 py-1.5 border-[2px] text-[9px] font-black uppercase tracking-[0.2em] shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]",
+                                            post.published ? "bg-primary-400 border-neutral-900 text-neutral-900" : "bg-neutral-50 text-neutral-400 border-neutral-200 shadow-none border-dashed"
                                         )}>
-                                            {post.published ? 'Stable' : 'Draft'}
+                                            {post.published ? 'STABLE' : 'DRAFT'}
                                         </div>
                                     </div>
-                                    <h3 className="text-lg font-bold text-neutral-900 group-hover:text-primary-800 transition-colors line-clamp-2 mb-2">{post.title}</h3>
-                                    <p className="text-[10px] font-medium text-neutral-400 uppercase tracking-widest">{formatDate(post.updated_at)}</p>
+                                    <h3 className="text-2xl font-black text-neutral-900 uppercase tracking-tighter line-clamp-2 mb-4 group-hover:text-primary-400 transition-colors">{post.title}</h3>
+                                    <p className="text-[10px] font-black text-neutral-400 uppercase tracking-[0.3em]">{formatDate(post.updated_at).toUpperCase()}</p>
                                 </div>
 
-                                <div className="flex items-center justify-between pt-6 border-t border-neutral-50">
-                                    <div className="flex -space-x-2">
+                                <div className="flex items-center justify-between pt-8 border-t-[3px] border-neutral-900">
+                                    <div className="flex -space-x-3">
                                         {post.categories.slice(0, 3).map((cat, i) => (
-                                            <div key={cat.id} className="w-6 h-6 rounded-full bg-white border border-neutral-100 flex items-center justify-center text-[8px] font-bold text-neutral-400 shadow-sm z-[10]" style={{ zIndex: 10 - i }}>
-                                                {cat.name[0]}
+                                            <div key={cat.id} className="w-10 h-10 border-[2px] border-neutral-900 bg-white flex items-center justify-center text-[10px] font-black text-neutral-900 shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] group-hover:translate-x-[-4px] transition-transform" style={{ zIndex: 10 - i }}>
+                                                {cat.name[0].toUpperCase()}
                                             </div>
                                         ))}
                                         {post.categories.length > 3 && (
-                                            <div className="w-6 h-6 rounded-full bg-neutral-50 border border-neutral-100 flex items-center justify-center text-[8px] font-bold text-neutral-400 z-0">
+                                            <div className="w-10 h-10 border-[2px] border-neutral-900 bg-neutral-900 text-white flex items-center justify-center text-[10px] font-black z-0">
                                                 +{post.categories.length - 3}
                                             </div>
                                         )}
                                     </div>
-                                    <div className="flex items-center gap-2">
-                                        <Link href={`/admin/posts/edit/${post.id}`} className="text-xs font-bold text-neutral-900 hover:text-primary-600 transition-colors">Edit Plan</Link>
-                                        <ArrowUpRight className="w-3.5 h-3.5 text-neutral-300" />
-                                    </div>
+                                    <Link
+                                        href={`/admin/posts/edit/${post.id}`}
+                                        className="brutalist-button h-12 px-6 bg-neutral-900 text-white text-[10px] font-black"
+                                    >
+                                        OPEN MISSION
+                                        <ArrowUpRight className="ml-2 w-4 h-4 text-primary-400" />
+                                    </Link>
                                 </div>
                             </div>
                         ))}
@@ -305,12 +306,12 @@ export default function PostsPage() {
 
             {/* Empty State */}
             {filteredPosts.length === 0 && (
-                <div className="py-40 text-center bg-white rounded-[3rem] border-2 border-dashed border-neutral-100">
-                    <div className="w-20 h-20 bg-neutral-50 rounded-full flex items-center justify-center mx-auto mb-6">
-                        <Archive className="w-8 h-8 text-neutral-200" />
+                <div className="brutalist-card py-40 text-center bg-neutral-50 grayscale opacity-40 border-dashed border-neutral-900">
+                    <div className="w-24 h-24 bg-white border-[3px] border-neutral-900 flex items-center justify-center mx-auto mb-10 rotate-6 shadow-[10px_10px_0px_0px_rgba(0,0,0,1)]">
+                        <Archive className="w-10 h-10 text-neutral-900" />
                     </div>
-                    <h3 className="text-xl font-bold text-neutral-900 mb-2 font-serif italic">Library Archive Empty</h3>
-                    <p className="text-neutral-400 max-w-sm mx-auto font-medium">No publications match your current filters. Adjust your search or draft a new entry.</p>
+                    <h3 className="text-2xl font-black text-neutral-900 uppercase tracking-tighter mb-4 italic">Library Archive Neutralized</h3>
+                    <p className="text-[11px] font-black uppercase tracking-[0.4em] text-neutral-400 max-w-sm mx-auto">No publication patterns detected for current query module. Reset protocols or initialize new entry.</p>
                 </div>
             )}
         </div>

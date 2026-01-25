@@ -80,75 +80,75 @@ export default function SEOPage() {
 
     if (loading) {
         return (
-            <div className="flex flex-col items-center justify-center h-[50vh] space-y-4">
-                <Loader2 className="w-8 h-8 animate-spin text-neutral-200" />
-                <p className="text-[10px] font-bold text-neutral-400 uppercase tracking-widest animate-pulse">Syncing Protocols...</p>
+            <div className="flex flex-col items-center justify-center h-[50vh] space-y-6">
+                <div className="w-12 h-12 border-[4px] border-neutral-100 border-t-neutral-900 rounded-none animate-spin shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]"></div>
+                <p className="text-neutral-400 font-black text-[10px] uppercase tracking-[0.4em] animate-pulse">Syncing Global Intelligence Protocols...</p>
             </div>
         );
     }
 
     return (
-        <div className="space-y-12 max-w-5xl">
+        <div className="space-y-16 max-w-6xl">
             {/* Header */}
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-8 border-b border-neutral-100 pb-10">
+            <div className="flex flex-col md:flex-row md:items-end justify-between gap-12 border-b-[4px] border-neutral-900 pb-16">
                 <div>
-                    <div className="flex items-center gap-2 mb-3">
-                        <Globe2 className="w-4 h-4 text-neutral-400" />
-                        <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-neutral-400">Growth Engine</span>
+                    <div className="flex items-center gap-3 mb-6">
+                        <Globe2 className="w-4 h-4 text-neutral-900" />
+                        <span className="text-[11px] font-black uppercase tracking-[0.4em] text-neutral-400">Global Search Intelligence</span>
                     </div>
-                    <h1 className="text-4xl font-bold tracking-tight text-neutral-900 mb-2">Global SEO & Search</h1>
-                    <p className="text-neutral-500 font-medium">Calibrate your search visibility and indexing intelligence.</p>
+                    <h1 className="text-6xl font-black tracking-tighter text-neutral-900 uppercase leading-none mb-4">Command Center</h1>
+                    <p className="text-lg font-bold text-neutral-400 uppercase tracking-widest">Calibrate global visibility and indexing protocols.</p>
                 </div>
                 <button
                     onClick={handleSave}
                     disabled={saving}
-                    className="h-12 px-8 rounded-xl bg-[#09090B] text-white hover:bg-neutral-800 font-bold text-sm transition-all flex items-center gap-2 shadow-xl shadow-neutral-100 disabled:opacity-50"
+                    className="brutalist-button-primary h-16 px-10"
                 >
-                    {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
-                    Broadcast Settings
+                    {saving ? <Loader2 className="w-5 h-5 animate-spin mr-3" /> : <Save className="w-5 h-5 mr-3" />}
+                    BROADCAST GLOBALLY
                 </button>
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
                 {/* Site Identity */}
-                <div className="bg-white rounded-[2rem] border border-neutral-100 p-10 shadow-sm space-y-10">
-                    <div className="flex items-center gap-3">
-                        <div className="p-2.5 bg-neutral-900 rounded-xl text-white shadow-lg">
-                            <SettingsIcon className="w-4 h-4" />
+                <div className="brutalist-card bg-white p-12 border-neutral-900 shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] space-y-12">
+                    <div className="flex items-center gap-4">
+                        <div className="w-12 h-12 bg-neutral-900 flex items-center justify-center text-white shadow-[4px_4px_0px_0px_rgba(0,0,0,0.1)]">
+                            <SettingsIcon className="w-6 h-6 text-primary-400" />
                         </div>
-                        <h3 className="font-bold text-neutral-900 tracking-tight">Core Architecture</h3>
+                        <h3 className="text-2xl font-black text-neutral-900 uppercase tracking-tighter">Core Architecture</h3>
                     </div>
 
-                    <div className="space-y-6">
-                        <div className="space-y-2">
-                            <label className="text-[10px] font-bold uppercase tracking-widest text-neutral-400">Public Site Title</label>
+                    <div className="space-y-8">
+                        <div className="space-y-3">
+                            <label className="text-[10px] font-black uppercase tracking-widest text-neutral-400">Public Site Identity</label>
                             <input
                                 type="text"
                                 value={settings.site_title}
                                 onChange={e => setSettings({ ...settings, site_title: e.target.value })}
-                                className="w-full px-5 py-4 bg-neutral-50 rounded-2xl border border-transparent focus:bg-white focus:border-neutral-200 transition-all text-sm font-bold text-neutral-900 outline-none shadow-inner"
+                                className="brutalist-input h-14"
                             />
                         </div>
 
-                        <div className="space-y-2">
-                            <label className="text-[10px] font-bold uppercase tracking-widest text-neutral-400">Baseline Description</label>
+                        <div className="space-y-3">
+                            <label className="text-[10px] font-black uppercase tracking-widest text-neutral-400">Baseline Abstract</label>
                             <textarea
                                 value={settings.site_description}
                                 onChange={e => setSettings({ ...settings, site_description: e.target.value })}
-                                rows={3}
-                                className="w-full px-5 py-4 bg-neutral-50 rounded-2xl border border-transparent focus:bg-white focus:border-neutral-200 transition-all text-sm text-neutral-600 outline-none shadow-inner resize-none leading-relaxed"
+                                rows={4}
+                                className="brutalist-input p-5 resize-none leading-relaxed font-bold"
                             />
                         </div>
 
-                        <div className="space-y-2">
-                            <label className="text-[10px] font-bold uppercase tracking-widest text-neutral-400">Canonical Base URL</label>
+                        <div className="space-y-3">
+                            <label className="text-[10px] font-black uppercase tracking-widest text-neutral-400">Canonical Resource URI</label>
                             <div className="relative">
-                                <Globe className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-300" />
+                                <Globe className="absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5 text-neutral-900" />
                                 <input
                                     type="url"
                                     value={settings.site_url}
                                     onChange={e => setSettings({ ...settings, site_url: e.target.value })}
-                                    className="w-full pl-12 pr-5 py-4 bg-neutral-50 rounded-2xl border border-transparent focus:bg-white focus:border-neutral-200 transition-all text-sm font-mono text-neutral-500 outline-none shadow-inner"
+                                    className="brutalist-input h-14 pl-14 font-mono lowercase"
                                 />
                             </div>
                         </div>
@@ -156,21 +156,19 @@ export default function SEOPage() {
                 </div>
 
                 {/* Indexing Intelligence */}
-                <div className="bg-[#09090B] rounded-[2rem] p-10 text-white space-y-10 shadow-2xl relative overflow-hidden">
-                    <div className="absolute top-0 right-0 w-64 h-64 bg-primary-600/10 blur-[96px] rounded-full" />
-
-                    <div className="flex items-center gap-3 relative z-10">
-                        <div className="p-2.5 bg-white/5 rounded-xl text-white border border-white/10">
-                            <ShieldCheck className="w-4 h-4 text-primary-400" />
+                <div className="bg-neutral-900 border-[4px] border-neutral-900 p-12 text-white space-y-12 shadow-[12px_12px_0px_0px_rgba(0,0,0,0.1)] relative">
+                    <div className="flex items-center gap-4 relative z-10">
+                        <div className="w-12 h-12 bg-white/5 border-[1.5px] border-white/10 flex items-center justify-center text-white">
+                            <ShieldCheck className="w-6 h-6 text-primary-400" />
                         </div>
-                        <h3 className="font-bold text-white tracking-tight">Indexing Engine</h3>
+                        <h3 className="text-2xl font-black text-white uppercase tracking-tighter">Indexing Engine</h3>
                     </div>
 
-                    <div className="space-y-8 relative z-10">
-                        <label className="flex items-center justify-between p-6 bg-white/5 border border-white/5 rounded-2xl cursor-pointer hover:bg-white/10 transition-all group">
+                    <div className="space-y-10 relative z-10">
+                        <label className="flex items-center justify-between p-8 bg-white/5 border-[2px] border-white/10 cursor-pointer hover:bg-white/[0.08] transition-all group shadow-[4px_4px_0px_0px_rgba(255,255,255,0.05)]">
                             <div className="space-y-1">
-                                <span className="text-sm font-bold text-white">Global Search Indexing</span>
-                                <p className="text-[10px] font-bold text-neutral-500 uppercase tracking-widest">Master Switch (INDEX/NOINDEX)</p>
+                                <span className="text-[11px] font-black uppercase tracking-widest text-white">Global Search Indexing</span>
+                                <p className="text-[9px] font-black text-neutral-500 uppercase tracking-[0.3em]">MASTER SWITCH: ACTIVE_INDEX</p>
                             </div>
                             <div className="relative inline-flex items-center cursor-pointer">
                                 <input
@@ -179,28 +177,28 @@ export default function SEOPage() {
                                     onChange={e => setSettings({ ...settings, indexing_active: e.target.checked })}
                                     className="sr-only peer"
                                 />
-                                <div className="w-11 h-6 bg-white/10 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-[#09090B] after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary-500"></div>
+                                <div className="w-12 h-7 bg-white/10 border-[2px] border-white/20 peer-focus:outline-none peer-checked:bg-primary-400 transition-colors after:content-[''] after:absolute after:top-[5px] after:left-[5px] after:bg-white after:h-3.5 after:w-3.5 after:transition-all peer-checked:after:translate-x-5 peer-checked:after:bg-neutral-900 peer-checked:after:border-neutral-900"></div>
                             </div>
                         </label>
 
-                        <div className="space-y-2">
-                            <label className="text-[10px] font-bold uppercase tracking-widest text-neutral-500">Title Presentation Template</label>
+                        <div className="space-y-3">
+                            <label className="text-[10px] font-black uppercase tracking-widest text-neutral-500">Presentation Template</label>
                             <input
                                 type="text"
                                 value={settings.meta_title_template}
                                 onChange={e => setSettings({ ...settings, meta_title_template: e.target.value })}
-                                className="w-full px-5 py-4 bg-white/5 rounded-2xl border border-white/5 focus:bg-white focus:text-neutral-900 transition-all text-sm font-bold text-white outline-none"
-                                placeholder="%title% | TechNest"
+                                className="w-full h-14 px-5 bg-white/5 border-[2px] border-white/10 focus:bg-white focus:text-neutral-900 transition-all text-sm font-black text-white outline-none"
+                                placeholder="%TITLE% | TECHNEST"
                             />
                         </div>
 
-                        <div className="pt-6 border-t border-white/5 flex items-center justify-between">
-                            <div className="flex items-center gap-3">
-                                <div className="w-2 h-2 rounded-full bg-primary-500 animate-pulse" />
-                                <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-neutral-400">Robots.txt Integrated</span>
+                        <div className="pt-10 border-t border-white/10 flex items-center justify-between">
+                            <div className="flex items-center gap-4">
+                                <div className="w-3 h-3 bg-primary-400 shadow-[0_0_15px_rgba(250,204,21,0.5)] animate-pulse" />
+                                <span className="text-[10px] font-black uppercase tracking-[0.4em] text-neutral-500">METADATA SYNC: OK</span>
                             </div>
-                            <button className="text-[10px] font-bold text-white hover:text-primary-400 transition-colors uppercase tracking-widest border border-white/10 px-4 py-1.5 rounded-lg bg-white/5">
-                                Re-sync XML
+                            <button className="brutalist-button h-10 px-6 bg-white/[0.05] border-white/10 text-white hover:bg-white hover:text-neutral-900 text-[9px] font-black tracking-widest uppercase">
+                                RE-SYNC XML
                             </button>
                         </div>
                     </div>
@@ -208,42 +206,42 @@ export default function SEOPage() {
             </div>
 
             {/* Strategic Analytics Interface */}
-            <div className="bg-white rounded-[2rem] border border-neutral-100 p-10 shadow-sm space-y-10">
-                <div className="flex items-center gap-3">
-                    <div className="p-2.5 bg-neutral-50 rounded-xl text-neutral-900 border border-neutral-100">
-                        <Activity className="w-4 h-4" />
+            <div className="brutalist-card bg-white p-12 border-neutral-900 space-y-12 shadow-[12px_12px_0px_0px_rgba(0,0,0,1)]">
+                <div className="flex items-center gap-4">
+                    <div className="w-12 h-12 bg-neutral-100 border-[2px] border-neutral-900 flex items-center justify-center text-neutral-900 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+                        <Activity className="w-6 h-6" />
                     </div>
-                    <h3 className="font-bold text-neutral-900 tracking-tight">Intelligence Integration</h3>
+                    <h3 className="text-2xl font-black text-neutral-900 uppercase tracking-tighter">Strategic Intelligence</h3>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                    <div className="space-y-2">
-                        <p className="text-[10px] font-bold uppercase tracking-widest text-neutral-400">Google G-Analytics</p>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
+                    <div className="space-y-3">
+                        <p className="text-[10px] font-black uppercase tracking-widest text-neutral-400">Google G-Analytics Protocol</p>
                         <input
                             type="text"
                             value={settings.google_analytics_id}
                             onChange={e => setSettings({ ...settings, google_analytics_id: e.target.value })}
-                            className="w-full px-5 py-4 bg-neutral-50 rounded-2xl border border-transparent focus:bg-white focus:border-neutral-200 transition-all text-xs font-mono text-neutral-500 outline-none shadow-inner"
+                            className="brutalist-input h-14 font-mono uppercase"
                             placeholder="G-XXXXXXX"
                         />
                     </div>
-                    <div className="space-y-2">
-                        <p className="text-[10px] font-bold uppercase tracking-widest text-neutral-400">Sitemap Protocol</p>
+                    <div className="space-y-3">
+                        <p className="text-[10px] font-black uppercase tracking-widest text-neutral-400">Sitemap Refresh Frequency</p>
                         <select
                             value={settings.sitemap_frequency}
                             onChange={e => setSettings({ ...settings, sitemap_frequency: e.target.value })}
-                            className="w-full px-5 py-4 bg-neutral-50 rounded-2xl border border-transparent focus:bg-white focus:border-neutral-200 transition-all text-[11px] font-bold text-neutral-900 outline-none shadow-inner"
+                            className="brutalist-input h-14 appearance-none cursor-pointer"
                         >
-                            <option value="daily">Scan: Daily</option>
-                            <option value="weekly">Scan: Weekly</option>
-                            <option value="monthly">Scan: Monthly</option>
+                            <option value="daily">PROTOCOL: DAILY SCAN</option>
+                            <option value="weekly">PROTOCOL: WEEKLY SCAN</option>
+                            <option value="monthly">PROTOCOL: MONTHLY SCAN</option>
                         </select>
                     </div>
-                    <div className="bg-primary-50 rounded-2xl p-6 flex items-center gap-4">
-                        <TrendingUp className="w-8 h-8 text-primary-600 shrink-0" />
+                    <div className="bg-primary-50 border-[3px] border-neutral-900 p-8 flex items-center gap-6 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)]">
+                        <TrendingUp className="w-10 h-10 text-neutral-900 shrink-0 italic" />
                         <div>
-                            <p className="text-[10px] font-bold text-primary-600 uppercase tracking-widest mb-1">Status</p>
-                            <h4 className="text-sm font-bold text-neutral-900">Protocols Active</h4>
+                            <p className="text-[10px] font-black text-neutral-400 uppercase tracking-widest mb-1">Status</p>
+                            <h4 className="text-lg font-black text-neutral-900 uppercase italic leading-none">Protocols Locked</h4>
                         </div>
                     </div>
                 </div>
