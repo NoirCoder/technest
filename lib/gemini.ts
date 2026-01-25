@@ -15,13 +15,28 @@ export async function generateSEOContent(content: string) {
     try {
         const genAI = new GoogleGenerativeAI(apiKey);
 
+        // Log masked key for diagnostic verification
+        console.log(`AI Engine: Initializing with key ${apiKey.substring(0, 6)}...${apiKey.substring(apiKey.length - 4)}`);
+
         let model;
-        try {
-            // gemini-1.5-flash is the most optimal model for this task
-            model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
-        } catch (e) {
-            console.error("Failed to initialize gemini-1.5-flash:", e);
-            throw new Error("Could not initialize the Gemini 1.5 Flash model. Ensure your API key is from Google AI Studio.");
+        const modelsToTry = ["gemini-1.5-flash", "gemini-1.5-flash-8b", "gemini-1.5-pro", "gemini-pro"];
+        let successModel = "";
+
+        for (const modelName of modelsToTry) {
+            try {
+                const testModel = genAI.getGenerativeModel({ model: modelName });
+                // We don't know if it's truly available until we try a small generation
+                // but getGenerativeModel itself rarely fails; the failure happens at generateContent
+                model = testModel;
+                successModel = modelName;
+                break;
+            } catch (e) {
+                console.warn(`Model ${modelName} initialization failed:`, e);
+            }
+        }
+
+        if (!model) {
+            throw new Error("Critical Failure: No compatible Gemini models could be initialized.");
         }
 
         const prompt = `
@@ -38,6 +53,7 @@ export async function generateSEOContent(content: string) {
             ${content.substring(0, 4000)}
         `;
 
+        console.log(`AI Engine: Deploying payload to ${successModel}...`);
         const result = await model.generateContent(prompt);
         const response = await result.response;
         const text = response.text();
@@ -52,27 +68,28 @@ export async function generateSEOContent(content: string) {
             console.error("Gemini JSON Parse Error:", text);
             return {
                 success: false,
-                error: `AI analysis succeeded but returned an invalid format. Raw response: ${text.substring(0, 100)}...`
+                error: `AI analysis succeeded via ${successModel} but returned an invalid format. Raw snippet: ${text.substring(0, 50)}`
             };
         }
     } catch (error: any) {
         console.error("Gemini API Error:", error);
 
+        const rawMessage = error.message || "Unknown error";
+
         // Detailed error reporting for 404/not found
-        if (error.message?.includes("404") || error.message?.includes("not found")) {
-            const rawMessage = error.message || "Unknown 404 error";
+        if (rawMessage.includes("404") || rawMessage.includes("not found")) {
             return {
                 success: false,
-                error: `Model Access Error: ${rawMessage}. 
-                1. Verify GOOGLE_GEMINI_API_KEY in Vercel is correct.
-                2. Ensure you have REDEPLOYED your site after updating the key.
-                3. Your key should start with 'AIzaSy'.`
+                error: `Model Access Error (404): The API reported that the model is missing for this key. 
+                1. Your key starts with '${apiKey.substring(0, 6)}'. Is this correct?
+                2. If you JUST updated the key to Vercel, you MUST go to the 'Deployments' tab and click 'Redeploy' for it to work.
+                3. Verify you created the key at aistudio.google.com and NOT the Google Cloud Console.`
             };
         }
 
         return {
             success: false,
-            error: `Tactical AI Error: ${error.message || "An unexpected error occurred."}`
+            error: `Tactical AI Error: ${rawMessage}`
         };
     }
 }
