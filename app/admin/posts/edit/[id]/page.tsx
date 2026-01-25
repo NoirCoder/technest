@@ -23,6 +23,7 @@ import {
 } from 'lucide-react';
 import Link from 'next/link';
 import { uploadImage } from '@/lib/storage';
+import { revalidateBlog } from '@/lib/revalidate';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
 
@@ -141,6 +142,9 @@ export default function EditPostPage({ params }: EditPostPageProps) {
                 }));
                 await supabase.from('post_categories').insert(categoryLinks);
             }
+
+            // Purge Vercel cache for the site
+            await revalidateBlog(formData.slug);
 
             if (!e) return; // Silent save
             router.push('/admin/posts');

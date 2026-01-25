@@ -20,6 +20,7 @@ import {
 } from 'lucide-react';
 import Link from 'next/link';
 import { uploadImage } from '@/lib/storage';
+import { revalidateBlog } from '@/lib/revalidate';
 import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
 
@@ -104,6 +105,9 @@ export default function NewPostPage() {
                 }));
                 await supabase.from('post_categories').insert(categoryLinks);
             }
+
+            // Sync with production cache
+            await revalidateBlog(formData.slug);
 
             router.push('/admin/posts');
         } catch (error) {

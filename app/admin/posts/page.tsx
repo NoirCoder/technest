@@ -19,6 +19,7 @@ import {
     Archive,
     ArrowUpRight
 } from 'lucide-react';
+import { revalidateBlog } from '@/lib/revalidate';
 import { formatDate } from '@/lib/markdown';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
@@ -64,6 +65,8 @@ export default function PostsPage() {
         if (error) {
             alert('Error deleting post');
         } else {
+            // Force production sync
+            await revalidateBlog();
             setPosts(posts.filter(p => p.id !== id));
         }
     };
