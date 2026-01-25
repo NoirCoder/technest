@@ -4,17 +4,11 @@ import { motion } from 'framer-motion';
 import {
     Search,
     Share2,
-    AlertCircle,
     CheckCircle2,
-    Info,
     BarChart,
-    ChevronDown,
     Globe,
-    Zap,
-    Sparkles,
-    Loader2
+    Zap
 } from 'lucide-react';
-import { generateSEOContent } from '@/lib/gemini';
 import { cn } from '@/lib/utils';
 import { useEffect, useState } from 'react';
 
@@ -31,9 +25,7 @@ interface SEOSidebarProps {
 }
 
 export default function SEOSidebar({ formData, onChange }: SEOSidebarProps) {
-    const [error, setError] = useState<string | null>(null);
     const [score, setScore] = useState(0);
-    const [loading, setLoading] = useState(false);
 
     // Basic SEO Scoring Logic
     useEffect(() => {
@@ -44,32 +36,6 @@ export default function SEOSidebar({ formData, onChange }: SEOSidebarProps) {
         if (formData.excerpt.length > 50) total += 25;
         setScore(total);
     }, [formData]);
-
-    const handleAIGenerate = async () => {
-        if (!formData.content || formData.content.length < 100) {
-            setError("Draft needs more content (min 100 chars) for tactical AI analysis.");
-            return;
-        }
-
-        setLoading(true);
-        setError(null);
-        try {
-            const result = await generateSEOContent(formData.content);
-            if (result.success && result.data) {
-                onChange({
-                    meta_title: result.data.title,
-                    meta_description: result.data.description,
-                    excerpt: result.data.excerpt
-                });
-            } else {
-                setError(result.error || "Tactical bypass failed.");
-            }
-        } catch (err: any) {
-            setError("Failed to connect to Gemini AI Satellite.");
-        } finally {
-            setLoading(false);
-        }
-    };
 
     return (
         <div className="space-y-10">
@@ -102,36 +68,6 @@ export default function SEOSidebar({ formData, onChange }: SEOSidebarProps) {
                             />
                         </div>
                     </div>
-
-                    <button
-                        onClick={handleAIGenerate}
-                        disabled={loading}
-                        className="brutalist-button-primary w-full h-16 bg-white text-neutral-900 shadow-[6px_6px_0px_0px_rgba(255,255,255,0.1)] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]"
-                    >
-                        <div className="flex items-center justify-center gap-3">
-                            {loading ? <Loader2 className="w-5 h-5 animate-spin text-neutral-900" /> : <Sparkles className="w-5 h-5 text-neutral-900" />}
-                            <span className="text-[11px] font-black tracking-widest">INITIALIZE GEMINI SEO</span>
-                        </div>
-                    </button>
-
-                    {error && (
-                        <motion.div
-                            initial={{ opacity: 0, y: 10 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            className="p-6 bg-red-400 border-[3px] border-neutral-900 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] text-neutral-900"
-                        >
-                            <div className="flex items-start gap-3 mb-3">
-                                <AlertCircle className="w-5 h-5 shrink-0 mt-0.5" />
-                                <span className="text-[10px] font-black uppercase tracking-widest">Diagnostic Telemetry:</span>
-                            </div>
-                            <textarea
-                                readOnly
-                                value={error}
-                                className="w-full bg-white/20 border-none outline-none text-[9px] font-mono leading-relaxed p-3 h-32 resize-none select-all"
-                            />
-                            <p className="mt-3 text-[8px] font-black uppercase tracking-tighter opacity-60 italic">Select text above to copy for support review</p>
-                        </motion.div>
-                    )}
                 </div>
             </div>
 
