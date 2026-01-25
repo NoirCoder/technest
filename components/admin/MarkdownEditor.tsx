@@ -129,9 +129,14 @@ export default function MarkdownEditor({ value, onChange }: MarkdownEditorProps)
                     />
                 </div>
 
-                {/* Preview */}
                 <div className={`p-8 bg-white overflow-auto h-[600px] ${!showPreview && 'hidden md:block'}`}>
-                    <div className="prose prose-neutral max-w-none prose-headings:font-serif prose-headings:font-bold prose-p:leading-relaxed prose-li:leading-relaxed">
+                    <div className="prose prose-lg md:prose-xl prose-neutral max-w-none 
+                        prose-headings:font-serif prose-headings:font-bold prose-headings:text-neutral-900
+                        prose-h1:text-4xl prose-h2:text-3xl prose-h3:text-2xl
+                        prose-p:leading-[1.8] prose-p:text-neutral-700 prose-p:mb-8
+                        prose-li:leading-relaxed prose-li:mb-2
+                        prose-table:border prose-table:border-neutral-200 prose-table:rounded-xl
+                    ">
                         <ReactMarkdown remarkPlugins={[remarkGfm, remarkBreaks]}>
                             {value || '*Live preview of your content...*'}
                         </ReactMarkdown>

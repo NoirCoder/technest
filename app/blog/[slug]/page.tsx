@@ -5,6 +5,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
+import remarkBreaks from 'remark-breaks';
 import { generateMetadata as generateSEOMetadata, generateArticleSchema, siteConfig } from '@/lib/seo';
 import { estimateReadTime, formatDate, extractHeadings } from '@/lib/markdown';
 import TableOfContents from '@/components/TableOfContents';
@@ -261,18 +262,22 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
 
                             {/* Main Content */}
                             <div className="md:col-span-8">
-                                <div className="prose prose-lg prose-neutral max-w-none
+                                <div className="prose prose-lg md:prose-xl prose-neutral max-w-none
                   prose-headings:font-serif prose-headings:font-bold prose-headings:text-neutral-900
-                  prose-h1:text-4xl prose-h2:text-3xl prose-h3:text-2xl
-                  prose-p:leading-relaxed prose-p:text-neutral-700
+                  prose-h1:text-5xl prose-h2:text-4xl prose-h3:text-2xl
+                  prose-p:leading-[1.8] prose-p:text-neutral-700 prose-p:mb-8
                   prose-a:text-primary-600 prose-a:no-underline hover:prose-a:underline hover:prose-a:text-primary-700
-                  prose-img:rounded-2xl prose-img:shadow-soft-lg
-                  prose-li:text-neutral-700
-                  prose-pre:bg-neutral-900 prose-pre:rounded-xl prose-pre:shadow-lg
-                  prose-blockquote:border-l-primary-500 prose-blockquote:bg-primary-50/30 prose-blockquote:py-2 prose-blockquote:px-6 prose-blockquote:rounded-r-lg prose-blockquote:not-italic
+                  prose-img:rounded-3xl prose-img:shadow-2xl prose-img:my-12
+                  prose-li:text-neutral-700 prose-li:mb-2
+                  prose-ul:my-8 prose-ol:my-8
+                  prose-pre:bg-neutral-900 prose-pre:rounded-2xl prose-pre:shadow-xl
+                  prose-blockquote:border-l-4 prose-blockquote:border-l-primary-500 prose-blockquote:bg-primary-50/40 prose-blockquote:py-4 prose-blockquote:px-8 prose-blockquote:rounded-r-2xl prose-blockquote:not-italic prose-blockquote:my-12
+                  prose-table:border prose-table:border-neutral-200 prose-table:rounded-xl prose-table:overflow-hidden
+                  prose-th:bg-neutral-50 prose-th:px-4 prose-th:py-3 prose-th:text-neutral-900
+                  prose-td:px-4 prose-td:py-3 prose-td:border-t prose-td:border-neutral-100
                 ">
                                     <ReactMarkdown
-                                        remarkPlugins={[remarkGfm]}
+                                        remarkPlugins={[remarkGfm, remarkBreaks]}
                                         components={{
                                             h1: ({ children, ...props }) => {
                                                 const id = String(children).toLowerCase().replace(/[^\w\s-]/g, '').replace(/\s+/g, '-');
