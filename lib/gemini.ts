@@ -52,23 +52,27 @@ export async function generateSEOContent(content: string) {
             console.error("Gemini JSON Parse Error:", text);
             return {
                 success: false,
-                error: "The AI returned an invalid format. Please try again."
+                error: `AI analysis succeeded but returned an invalid format. Raw response: ${text.substring(0, 100)}...`
             };
         }
     } catch (error: any) {
         console.error("Gemini API Error:", error);
 
-        // Handle common 404 or permission errors
+        // Detailed error reporting for 404/not found
         if (error.message?.includes("404") || error.message?.includes("not found")) {
+            const rawMessage = error.message || "Unknown 404 error";
             return {
                 success: false,
-                error: "Model not found. Please ensure your API key is a 'Google AI Studio' key and not a 'Google Cloud' project key. Standard AI Studio keys have immediate access to Gemini 1.5 Flash."
+                error: `Model Access Error: ${rawMessage}. 
+                1. Verify GOOGLE_GEMINI_API_KEY in Vercel is correct.
+                2. Ensure you have REDEPLOYED your site after updating the key.
+                3. Your key should start with 'AIzaSy'.`
             };
         }
 
         return {
             success: false,
-            error: error.message || "An unexpected error occurred during AI analysis."
+            error: `Tactical AI Error: ${error.message || "An unexpected error occurred."}`
         };
     }
 }
