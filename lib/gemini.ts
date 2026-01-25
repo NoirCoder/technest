@@ -13,80 +13,54 @@ export async function generateSEOContent(content: string) {
     }
 
     try {
-        const apiVersions = ["v1", "v1beta"];
-        const modelsToTry = [
-            "gemini-1.5-flash",
-            "gemini-1.5-flash-latest",
-            "gemini-1.5-flash-8b",
-            "gemini-1.5-pro",
-            "gemini-pro"
-        ];
+        const genAI = new GoogleGenerativeAI(apiKey);
 
-        const prompt = `
-            Analyze the following tech blog content and provide:
-            1. A compelling SEO Meta Title (max 60 chars)
-            2. A high-conversion Meta Description (max 160 chars)
-            3. A short, catchy teaser/excerpt (max 120 chars)
-            4. 3-5 keywords
-
-            Formatting: Return ONLY a valid JSON object with keys: "title", "description", "excerpt", "keywords".
-            Do not include markdown code blocks or any other text.
-
-            Content:
-            ${content.substring(0, 4000)}
-        `;
-
+        // Protocol: Standard v1 models have the highest compatibility
+        const models = ["gemini-1.5-flash", "gemini-1.5-pro", "gemini-1.0-pro"];
         let lastError = "";
 
-        // DEEP NEGOTIATION: Version x Model
-        for (const version of apiVersions) {
+        const prompt = `
+            Analyze this tech content: ${content.substring(0, 2000)}
+            Return JSON: { "title": "...", "description": "...", "excerpt": "...", "keywords": [] }
+        `;
+
+        for (const name of models) {
             try {
-                const genAI = new GoogleGenerativeAI(apiKey);
-                // Note: The SDK typically handles versioning internally, but we can force it
-                // via internal endpoint manipulation or by trying standard initialization
+                console.log(`AI Engine: Attempting stable link via ${name}...`);
+                const model = genAI.getGenerativeModel({ model: name });
+                const result = await model.generateContent(prompt);
+                const text = result.response.text();
 
-                for (const modelName of modelsToTry) {
-                    try {
-                        console.log(`AI Engine: Negotiating via ${version}/${modelName}...`);
-                        const model = genAI.getGenerativeModel({ model: modelName }, { apiVersion: version as any });
-                        const result = await model.generateContent(prompt);
-                        const response = await result.response;
-                        const text = response.text();
-
-                        if (text) {
-                            console.log(`AI Engine: Connection secured via ${version}/${modelName}`);
-                            const cleanText = text.replace(/```json|```/gi, "").trim();
-                            const data = JSON.parse(cleanText);
-                            return { success: true, data };
-                        }
-                    } catch (e: any) {
-                        lastError = e.message || "Model rejection";
-                        console.warn(`AI Engine: ${version}/${modelName} unavailable:`, lastError);
-                    }
+                if (text) {
+                    const cleanText = text.replace(/```json|```/gi, "").trim();
+                    const data = JSON.parse(cleanText);
+                    return { success: true, data };
                 }
-            } catch (vError: any) {
-                console.warn(`AI Engine: Version ${version} handshake failed.`);
+            } catch (e: any) {
+                lastError = e.message || "Bypass failed";
+                console.warn(`AI Engine: ${name} link rejected:`, lastError);
             }
         }
 
-        // TOTAL FLEET COLLAPSE
         return {
             success: false,
-            error: `Strategic AI Failure: No connection established.
-            Latest Error: ${lastError}
-            Key Index: ${apiKey.substring(0, 8)}...
-
-            DIAGNOSTIC: This 404 usually happens if:
-            1. The key is NOT a 'Google AI Studio' key.
-            2. The 'Generative Language API' is NOT enabled for your project.
-            3. You have not REDEPLOYED on Vercel after saving settings.`
+            error: `All models rejected the connection (404/403). 
+            
+            DIAGNOSTIC DATA:
+            - Key Prefix: ${apiKey.substring(0, 8)}
+            - Latest Error: ${lastError}
+            
+            REQUIRED ACTION:
+            1. Your Google project might not have the API enabled.
+            2. Go here: https://console.cloud.google.com/apis/library/generativelanguage.googleapis.com
+            3. Ensure it says 'API Enabled'. If not, click ENABLE.
+            4. REDEPLOY on Vercel after enabling.`
         };
 
     } catch (globalError: any) {
-        console.error("Critical AI Pipeline Error:", globalError);
         return {
             success: false,
-            error: `System Failure: ${globalError.message || "An unexpected error occurred."}`
+            error: `System Reset Required: ${globalError.message}`
         };
     }
 }
