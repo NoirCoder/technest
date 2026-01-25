@@ -18,26 +18,13 @@ export async function generateSEOContent(content: string) {
         // Log masked key for diagnostic verification
         console.log(`AI Engine: Initializing with key ${apiKey.substring(0, 6)}...${apiKey.substring(apiKey.length - 4)}`);
 
-        let model;
-        const modelsToTry = ["gemini-1.5-flash", "gemini-1.5-flash-8b", "gemini-1.5-pro", "gemini-pro"];
-        let successModel = "";
-
-        for (const modelName of modelsToTry) {
-            try {
-                const testModel = genAI.getGenerativeModel({ model: modelName });
-                // We don't know if it's truly available until we try a small generation
-                // but getGenerativeModel itself rarely fails; the failure happens at generateContent
-                model = testModel;
-                successModel = modelName;
-                break;
-            } catch (e) {
-                console.warn(`Model ${modelName} initialization failed:`, e);
-            }
-        }
-
-        if (!model) {
-            throw new Error("Critical Failure: No compatible Gemini models could be initialized.");
-        }
+        const modelsToTry = [
+            "gemini-1.5-flash",
+            "gemini-1.5-flash-latest",
+            "gemini-1.5-flash-8b",
+            "gemini-1.5-pro",
+            "gemini-pro"
+        ];
 
         const prompt = `
             Analyze the following tech blog content and provide:
@@ -53,43 +40,53 @@ export async function generateSEOContent(content: string) {
             ${content.substring(0, 4000)}
         `;
 
-        console.log(`AI Engine: Deploying payload to ${successModel}...`);
-        const result = await model.generateContent(prompt);
-        const response = await result.response;
-        const text = response.text();
+        let lastError = "";
 
-        // Clean the response if it contains markdown code blocks or whitespace
-        const cleanText = text.replace(/```json|```/gi, "").trim();
+        // ACTIVE NEGOTIATION LOOP
+        // We must attempt generation inside the loop to truly verify model access (404s happen here)
+        for (const modelName of modelsToTry) {
+            try {
+                console.log(`AI Engine: Negotiating with ${modelName}...`);
+                const model = genAI.getGenerativeModel({ model: modelName });
+                const result = await model.generateContent(prompt);
+                const response = await result.response;
+                const text = response.text();
 
-        try {
-            const data = JSON.parse(cleanText);
-            return { success: true, data };
-        } catch (parseError) {
-            console.error("Gemini JSON Parse Error:", text);
-            return {
-                success: false,
-                error: `AI analysis succeeded via ${successModel} but returned an invalid format. Raw snippet: ${text.substring(0, 50)}`
-            };
+                if (text) {
+                    console.log(`AI Engine: Connection established via ${modelName}`);
+
+                    // Clean and parse
+                    const cleanText = text.replace(/```json|```/gi, "").trim();
+                    try {
+                        const data = JSON.parse(cleanText);
+                        return { success: true, data };
+                    } catch (parseError) {
+                        console.error(`Format mismatch on ${modelName}:`, text);
+                        // Continue to next model if format is bad? No, usually model access is the issue.
+                        // But let's try next model just in case.
+                    }
+                }
+            } catch (e: any) {
+                lastError = e.message || "Unknown negotiation error";
+                console.warn(`AI Engine: Model ${modelName} rejected request:`, lastError);
+                // Continue to next model in the fleet
+            }
         }
-    } catch (error: any) {
-        console.error("Gemini API Error:", error);
 
-        const rawMessage = error.message || "Unknown error";
-
-        // Detailed error reporting for 404/not found
-        if (rawMessage.includes("404") || rawMessage.includes("not found")) {
-            return {
-                success: false,
-                error: `Model Access Error (404): The API reported that the model is missing for this key. 
-                1. Your key starts with '${apiKey.substring(0, 6)}'. Is this correct?
-                2. If you JUST updated the key to Vercel, you MUST go to the 'Deployments' tab and click 'Redeploy' for it to work.
-                3. Verify you created the key at aistudio.google.com and NOT the Google Cloud Console.`
-            };
-        }
-
+        // FLEET FAILURE
         return {
             success: false,
-            error: `Tactical AI Error: ${rawMessage}`
+            error: `Fleet Negotiation Failed: All compatible models returned errors. Latest: ${lastError}.
+            1. Verified Key: ${apiKey.substring(0, 6)}...
+            2. Check: Is your key from aistudio.google.com?
+            3. Check: Is your project region supported by Google AI?`
+        };
+
+    } catch (globalError: any) {
+        console.error("Critical AI Pipeline Error:", globalError);
+        return {
+            success: false,
+            error: `Critical Failure: ${globalError.message || "An unexpected error occurred."}`
         };
     }
 }
