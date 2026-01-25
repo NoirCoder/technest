@@ -72,24 +72,27 @@ export default function SEOSidebar({ formData, onChange }: SEOSidebarProps) {
     return (
         <div className="space-y-10">
             {/* SEO Health Card */}
-            <div className="bg-neutral-900 border-[4px] border-neutral-900 p-10 text-white relative shadow-[12px_12px_0px_0px_rgba(0,0,0,0.1)]">
-                <div className="relative z-10 flex flex-col gap-8">
-                    <div className="flex justify-between items-center">
-                        <p className="text-[10px] font-black uppercase tracking-[0.4em] text-neutral-500">Telemetry Analysis</p>
-                        <div className={cn(
-                            "px-3 py-1 border-[1.5px] text-[9px] font-black uppercase tracking-widest",
-                            score > 70 ? "bg-green-500/20 text-green-400 border-green-500/40" : "bg-primary-400/20 text-primary-400 border-primary-400/40"
-                        )}>
-                            {score > 70 ? 'STABLE' : 'AUDIT REQUIRED'}
+            <div className="bg-neutral-900 border-[4px] border-neutral-900 p-10 text-white relative shadow-[12px_12px_0px_0px_rgba(0,0,0,1)]">
+                <div className="relative z-10 flex flex-col gap-10">
+                    <div className="flex justify-between items-start">
+                        <div>
+                            <p className="text-[10px] font-black uppercase tracking-[0.4em] text-neutral-500 mb-2">Telemetry Analysis</p>
+                            <div className={cn(
+                                "inline-block px-3 py-1 border-[1.5px] text-[9px] font-black uppercase tracking-widest",
+                                score > 70 ? "bg-green-500/20 text-green-400 border-green-500/40" : "bg-primary-400/20 text-primary-400 border-primary-400/40"
+                            )}>
+                                {score > 70 ? 'STABLE' : 'AUDIT REQUIRED'}
+                            </div>
                         </div>
+                        <BarChart className="w-5 h-5 text-neutral-500" />
                     </div>
 
-                    <div className="space-y-4">
-                        <div className="flex justify-between items-baseline mb-2">
-                            <h3 className="text-6xl font-black tracking-tighter italic leading-none">{score}%</h3>
-                            <span className="text-[10px] font-black text-neutral-500 uppercase tracking-widest">Global Rank</span>
+                    <div className="space-y-6">
+                        <div className="flex flex-col gap-2">
+                            <span className="text-[10px] font-black text-neutral-500 uppercase tracking-widest">Global Intelligence Rank</span>
+                            <h3 className="text-7xl font-black tracking-tighter italic leading-none">{score}%</h3>
                         </div>
-                        <div className="h-2 bg-white/5 border-[1.5px] border-white/10 overflow-hidden p-0.5">
+                        <div className="h-2.5 bg-white/5 border-[1.5px] border-white/10 overflow-hidden p-0.5">
                             <motion.div
                                 initial={{ width: 0 }}
                                 animate={{ width: `${score}%` }}
@@ -101,10 +104,12 @@ export default function SEOSidebar({ formData, onChange }: SEOSidebarProps) {
                     <button
                         onClick={handleAIGenerate}
                         disabled={loading}
-                        className="brutalist-button-primary w-full h-14 bg-white text-neutral-900 shadow-[4px_4px_0px_0px_rgba(255,255,255,0.2)] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]"
+                        className="brutalist-button-primary w-full h-16 bg-white text-neutral-900 shadow-[6px_6px_0px_0px_rgba(255,255,255,0.1)] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]"
                     >
-                        {loading ? <Loader2 className="w-5 h-5 animate-spin mr-3 text-neutral-900" /> : <Sparkles className="w-5 h-5 mr-3 text-neutral-900" />}
-                        <span className="text-[10px] font-black">INITIALIZE GEMINI SEO</span>
+                        <div className="flex items-center justify-center gap-3">
+                            {loading ? <Loader2 className="w-5 h-5 animate-spin text-neutral-900" /> : <Sparkles className="w-5 h-5 text-neutral-900" />}
+                            <span className="text-[11px] font-black tracking-widest">INITIALIZE GEMINI SEO</span>
+                        </div>
                     </button>
                 </div>
             </div>

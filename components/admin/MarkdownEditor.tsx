@@ -126,9 +126,9 @@ export default function MarkdownEditor({
             <div className={cn(
                 "px-8 py-4 flex items-center justify-between border-b-[3px] border-neutral-900 shrink-0 bg-white",
             )}>
-                <div className="flex items-center gap-8">
+                <div className="flex items-center gap-6 overflow-x-auto no-scrollbar pb-1 md:pb-0">
                     {toolbarGroups.map((group, gIdx) => (
-                        <div key={group.name} className="flex items-center gap-2">
+                        <div key={group.name} className="flex items-center gap-1.5 shrink-0">
                             {group.items.map((item) => {
                                 const Icon = item.icon;
                                 return (
@@ -138,25 +138,27 @@ export default function MarkdownEditor({
                                         onClick={item.action}
                                         title={item.label}
                                         disabled={isUploading && item.label === 'Image'}
-                                        className="p-2.5 text-neutral-400 hover:bg-neutral-900 hover:text-white border-[1.5px] border-transparent hover:border-neutral-900 transition-all disabled:opacity-50"
+                                        className="p-2 text-neutral-400 hover:bg-neutral-900 hover:text-white transition-all disabled:opacity-50"
                                     >
                                         {isUploading && item.label === 'Image' ? (
                                             <Loader2 className="w-4 h-4 animate-spin" />
                                         ) : (
-                                            <Icon className="w-4.5 h-4.5" />
+                                            <Icon className="w-4 h-4" />
                                         )}
                                     </button>
                                 );
                             })}
-                            {gIdx < toolbarGroups.length - 1 && <div className="w-[2px] h-6 bg-neutral-900 mx-4" />}
+                            {gIdx < toolbarGroups.length - 1 && <div className="w-[1.5px] h-5 bg-neutral-200 mx-2" />}
                         </div>
                     ))}
 
+                    <div className="w-[1.5px] h-6 bg-neutral-900 mx-2 shrink-0" />
+
                     <button
                         type="button"
-                        className="flex items-center gap-3 px-4 py-2 bg-primary-400 text-neutral-900 border-[2px] border-neutral-900 shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-[1.5px] hover:translate-y-[1.5px] transition-all text-[10px] font-black uppercase tracking-widest"
+                        className="flex items-center gap-2 px-3 py-1.5 bg-primary-400 text-neutral-900 border-[2px] border-neutral-900 shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-[1.5px] hover:translate-y-[1.5px] transition-all text-[9px] font-black uppercase tracking-widest shrink-0"
                     >
-                        <Zap className="w-4 h-4 fill-current" />
+                        <Zap className="w-3.5 h-3.5 fill-current" />
                         Affiliates
                     </button>
                 </div>
