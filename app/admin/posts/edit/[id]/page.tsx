@@ -4,9 +4,12 @@ import { supabase, Category } from '@/lib/supabase';
 import { slugify } from '@/lib/slugify';
 import { useState, useEffect, use } from 'react';
 import { useRouter } from 'next/navigation';
+import Image from 'next/image';
 import MarkdownEditor from '@/components/admin/MarkdownEditor';
 import { ArrowLeft, Save, Globe, Eye, Settings, Image as ImageIcon, Trash2, Loader2 } from 'lucide-react';
 import Link from 'next/link';
+import { uploadImage } from '@/lib/storage';
+import { useRef } from 'react';
 
 interface EditPostPageProps {
     params: Promise<{ id: string }>;
@@ -15,6 +18,8 @@ interface EditPostPageProps {
 export default function EditPostPage({ params }: EditPostPageProps) {
     const { id } = use(params);
     const router = useRouter();
+    const featuredImageInputRef = useRef<HTMLInputElement>(null);
+    const [isUploadingFeatured, setIsUploadingFeatured] = useState(false);
     const [categories, setCategories] = useState<Category[]>([]);
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
@@ -85,6 +90,19 @@ export default function EditPostPage({ params }: EditPostPageProps) {
             title,
             slug: slugify(title),
         });
+    };
+
+    const handleFeaturedImageUpload = async (file: File) => {
+        setIsUploadingFeatured(true);
+        try {
+            const url = await uploadImage(file);
+            setFormData(prev => ({ ...prev, featured_image: url }));
+        } catch (error) {
+            console.error('Upload failed:', error);
+            alert('Image upload failed.');
+        } finally {
+            setIsUploadingFeatured(false);
+        }
     };
 
     const handleCategoryToggle = (categoryId: string) => {
@@ -255,18 +273,72 @@ export default function EditPostPage({ params }: EditPostPageProps) {
                                 </div>
                                 <div>
                                     <label className="block text-[11px] font-bold uppercase tracking-[0.2em] text-neutral-400 mb-3">
-                                        Visual Identifier (Image URL)
+                                        Visual Identifier (Featured Image)
                                     </label>
-                                    <div className="flex items-center px-4 py-3 bg-neutral-50 rounded-xl border border-neutral-100 focus-within:border-primary-200">
-                                        <ImageIcon className="w-4 h-4 text-neutral-400 mr-3" />
-                                        <input
-                                            type="url"
-                                            value={formData.featured_image}
-                                            onChange={(e) => setFormData({ ...formData, featured_image: e.target.value })}
-                                            className="bg-transparent text-neutral-900 text-sm flex-1 focus:outline-none"
-                                            placeholder="https://images.unsplash.com/..."
-                                        />
-                                    </div>
+
+                                    {formData.featured_image ? (
+                                        <div className="space-y-4">
+                                            <div className="relative aspect-video rounded-2xl overflow-hidden border border-neutral-100 group">
+                                                <Image
+                                                    src={formData.featured_image}
+                                                    alt="Preview"
+                                                    fill
+                                                    className="object-cover"
+                                                />
+                                                <button
+                                                    type="button"
+                                                    onClick={() => setFormData({ ...formData, featured_image: '' })}
+                                                    className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity text-white font-bold text-xs"
+                                                >
+                                                    Change Image
+                                                </button>
+                                            </div>
+                                            <input
+                                                type="url"
+                                                value={formData.featured_image}
+                                                onChange={(e) => setFormData({ ...formData, featured_image: e.target.value })}
+                                                className="w-full px-4 py-2 bg-neutral-50 rounded-xl border border-neutral-100 text-[10px] text-neutral-400 focus:outline-none"
+                                                placeholder="Direct URL fallback"
+                                            />
+                                        </div>
+                                    ) : (
+                                        <div className="space-y-4">
+                                            <button
+                                                type="button"
+                                                onClick={() => featuredImageInputRef.current?.click()}
+                                                disabled={isUploadingFeatured}
+                                                className="w-full h-32 border-2 border-dashed border-neutral-100 rounded-2xl flex flex-col items-center justify-center gap-2 hover:bg-neutral-50 hover:border-primary-200 transition-all group"
+                                            >
+                                                {isUploadingFeatured ? (
+                                                    <Loader2 className="w-6 h-6 text-primary-400 animate-spin" />
+                                                ) : (
+                                                    <>
+                                                        <div className="w-10 h-10 bg-primary-50 rounded-xl flex items-center justify-center text-primary-600 group-hover:scale-110 transition-transform">
+                                                            <ImageIcon className="w-5 h-5" />
+                                                        </div>
+                                                        <span className="text-xs font-bold text-neutral-400">Upload Image</span>
+                                                    </>
+                                                )}
+                                            </button>
+                                            <input
+                                                type="file"
+                                                ref={featuredImageInputRef}
+                                                className="hidden"
+                                                accept="image/*"
+                                                onChange={(e) => {
+                                                    const file = e.target.files?.[0];
+                                                    if (file) handleFeaturedImageUpload(file);
+                                                }}
+                                            />
+                                            <input
+                                                type="url"
+                                                value={formData.featured_image}
+                                                onChange={(e) => setFormData({ ...formData, featured_image: e.target.value })}
+                                                className="w-full px-4 py-3 bg-neutral-50 rounded-xl border border-neutral-100 text-xs focus:outline-none focus:border-primary-200"
+                                                placeholder="Paste image URL directly..."
+                                            />
+                                        </div>
+                                    )}
                                 </div>
                             </div>
 

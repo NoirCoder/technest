@@ -4,12 +4,17 @@ import { supabase, Category } from '@/lib/supabase';
 import { slugify } from '@/lib/slugify';
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import Image from 'next/image';
 import MarkdownEditor from '@/components/admin/MarkdownEditor';
-import { ArrowLeft, Save, Globe, Eye, Settings, Image as ImageIcon } from 'lucide-react';
+import { ArrowLeft, Save, Globe, Eye, Settings, Image as ImageIcon, Loader2 } from 'lucide-react';
 import Link from 'next/link';
+import { uploadImage } from '@/lib/storage';
+import { useRef } from 'react';
 
 export default function NewPostPage() {
     const router = useRouter();
+    const featuredImageInputRef = useRef<HTMLInputElement>(null);
+    const [isUploadingFeatured, setIsUploadingFeatured] = useState(false);
     const [categories, setCategories] = useState<Category[]>([]);
     const [loading, setLoading] = useState(false);
     const [formData, setFormData] = useState({
@@ -46,6 +51,19 @@ export default function NewPostPage() {
             title,
             slug: slugify(title),
         });
+    };
+
+    const handleFeaturedImageUpload = async (file: File) => {
+        setIsUploadingFeatured(true);
+        try {
+            const url = await uploadImage(file);
+            setFormData(prev => ({ ...prev, featured_image: url }));
+        } catch (error) {
+            console.error('Upload failed:', error);
+            alert('Image upload failed.');
+        } finally {
+            setIsUploadingFeatured(false);
+        }
     };
 
     const handleCategoryToggle = (categoryId: string) => {
